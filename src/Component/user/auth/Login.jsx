@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../../Redux/Reducers/Auth/singleReducer";
 import { useRef } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../../firebase/config.js";
 import { useEffect } from "react";
 
@@ -27,11 +27,10 @@ function Login() {
   const dispatch = useDispatch();
 
   const [otpForm, setOtpForm] = useState(false);
-
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const expectedOtp = '1234'; // Replace with your expected OTP
-  const inputRefs = [useRef(), useRef(), useRef(), useRef()];
-
+  const [phone,setPhone]=useState("")
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
+  
   const handleOtpChange = (index, value) => {
 
     if (value === '') {
@@ -45,22 +44,79 @@ function Login() {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-      if (index < 3) {
+      if (index < 5) {
         inputRefs[index + 1].current.focus(); 
       }
     }
   };
 
-  
+const handleOtpNumber =(e)=>{
+setPhone(e.target.value)
+}
 
-  const verifyOtp = () => {
-    const enteredOtp = otp.join('');
-    if (enteredOtp === expectedOtp) {
-      alert('OTP is correct!'); // You can replace this with your own logic
-    } else {
-      alert('OTP is incorrect. Please try again.');
+  function onCaptchaVerify(){
+    if(!window.recaptchaVerifier ){
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        callback: (response) => {
+      sentOtp()
+        },
+        'expired-callback': () => {
+        
+        }
+      },auth);
+    }
+  }
+  
+  const checkPhoneExistence = async (phone) => {
+  
+    try {
+      const response = await axios.post('/api/checkPhoneNumber', {
+        phone,
+      });
+  console.log(response.data.status,"jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+      if(response.data.status===true){
+  return true
+      }  // Return true if the phone number exists, false otherwise
+    } catch (error) {
+      console.error(error);
+      return false; // Assume it doesn't exist in case of an error
     }
   };
+
+  const sentOtp = async() => {
+   onCaptchaVerify()
+
+
+   const phoneExists = await checkPhoneExistence(phone);
+
+   if (phoneExists) {
+    const appVerifier = window.recaptchaVerifier;
+    const ph = '+91' + phone;
+    console.log(ph);
+    signInWithPhoneNumber(auth, ph, appVerifier)
+      .then((confirmationResult) => {
+        window.confirmationResult = confirmationResult;
+        toast.success("OTP sent successfully");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } else {
+    // Show an error message that the phone number doesn't exist
+    toast.error("Phone number doesn't exist");
+  }
+  };
+  
+  function verifyOtp(){
+    const enteredOtp = otp.join('');
+    window.confirmationResult.confirm(enteredOtp).then(async(res)=>{
+      
+      navigate("/signup");
+
+    })
+  }
+  
 
   const [value, setValue] = useState(null)
   
@@ -276,6 +332,8 @@ function Login() {
               id="phoneNumber"
               name="phoneNumber"
               type="text"
+              value={phone}
+              onChange={handleOtpNumber}
               required
               className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-white"
               placeholder="Phone Number"
@@ -284,35 +342,34 @@ function Login() {
           </div>
           <div>
             <button
-              
+              onClick={sentOtp}
               type="button"
               className="group relative w-full flex justify-center py-2 px-4 mb-7 border border-transparent text-sm font-medium rounded-md text-white bg-[#030712] hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:bg-[#030712]"
             >
               Send OTP
             </button>
           </div>
-          {/* <div id="recaptcha" className="mb-5"></div> */}
+          <div id="recaptcha-container" className="mb-5"></div>
           <div className="flex justify-between items-center">
          
     
           {otp.map((value, index) => (
-  <input
-    key={index}
-    className="w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500"
-    type="text"
-    maxLength="1"
-    pattern="[0-9]"
-    inputMode="numeric"
-    autoComplete="one-time-code"
-    required
-    value={value}
-    onChange={(e) => handleOtpChange(index, e.target.value)}
-    ref={inputRefs[index]}
-  />
-))}
-
+    <input
+      key={index}
+      className="w-12 h-12 text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500"
+      type="text"
+      maxLength="1"
+      pattern="[0-9]"
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      required
+      value={value}
+      onChange={(e) => handleOtpChange(index, e.target.value)}
+      ref={inputRefs[index]}
+    />
+  ))}
 <button
-  className="bg-teal-500 hover-bg-teal-700 text-white font-bold py-2 px-4 rounded focus-outline-none focus-shadow-outline"
+  className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus-outline-none focus-shadow-outline"
   type="button"
   onClick={verifyOtp}
 >

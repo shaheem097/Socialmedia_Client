@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../Axios/axios";
 import { toast } from "react-toastify";
-import {loginFailure,loginSuccess,userBlocked} from "../../../Redux/Reducers/Auth/loginReducer.jsx";
+// import {loginFailure,loginSuccess,userBlocked} from "../../../Redux/Reducers/Auth/loginReducer.jsx";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../../Redux/Reducers/Auth/singleReducer";
 import { useRef } from "react";
-import { signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
+import { RecaptchaVerifier, signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../../firebase/config.js";
 import { useEffect } from "react";
-import { RecaptchaVerifier   } from "firebase/auth";
+
 
 function Login() {
 
@@ -27,17 +27,13 @@ function Login() {
   const dispatch = useDispatch();
 
   const [otpForm, setOtpForm] = useState(false);
-  const [phone,setPhone]=useState('')
+
   const [otp, setOtp] = useState(['', '', '', '']);
   const expectedOtp = '1234'; // Replace with your expected OTP
   const inputRefs = [useRef(), useRef(), useRef(), useRef()];
-  
- 
-  const handleOtpNumber=(e)=>{
-    setPhone(e.target.value)
-  }
 
   const handleOtpChange = (index, value) => {
+
     if (value === '') {
       const newOtp = [...otp];
       newOtp[index] = '';
@@ -55,12 +51,12 @@ function Login() {
     }
   };
 
-  function onCaptchVerify(){
+  function onCaptchaVerify(){
     if(!window.recaptchaVerifier ){
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible',
-        callback: (response) => {
-          onSignup()
+        'callback': (response) => {
+      
         },
         'expired-callback': () => {
         
@@ -68,29 +64,7 @@ function Login() {
       },auth);
     }
   }
-function onSignup(){
-  onCaptchVerify()
-
-  const appVerifier=window.recaptchaVerifier
-  signInWithPhoneNumber(auth, phone, appVerifier)
-    .then((confirmationResult) => {
-    
-      window.confirmationResult = confirmationResult;
-      toast.success('OTP sended successfully')
-    }).catch((error) => {
-      console.log(error);
-    });
-}
-
-  // const sendOtp=async()=>{
-  //   try{
-  //     let recaptchaVerifier=  await new RecaptchaVerifier("recaptcha",{},auth)
-  //    let confirmation= await signInWithPhoneNumber(auth,phone,recaptchaVerifier)
-  //    console.log(confirmation);
-  //   }catch(err){
-  //     console.log(err);
-  //   }
-  // }
+  
 
   const verifyOtp = () => {
     const enteredOtp = otp.join('');
@@ -101,42 +75,38 @@ function onSignup(){
     }
   };
 
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(null)
   
   const handleGoogleSignIn = async (e) => {
     signInWithPopup(auth, provider).then(async (data) => {
       const email = data.user.email;
-     
+  
       const googleUser = {
         email,
-     
       };
-      setValue(googleUser); // Update the value state with user data
+      setValue(googleUser); // This will trigger the useEffect
     });
   };
-
-  useEffect(() => {
-    if (value) {
-      console.log(value);
-      axios.post("/api/google", value).then((response) => {
-       
+  const handleGoogleSignInEffect = (googleUser) => {
+    if (googleUser) {
+      console.log(googleUser, "hgjhghghhhghgfhg");
+      axios.post("/api/google", googleUser).then((response) => {
         if (response.data.status) {
-          localStorage.setItem(
-            "userAccessToken",
-            response?.data?.response?.userData?.token
-          );
-          // dispatch(setUserdata(response?.data?.response?.userData));
+          localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
           dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
           toast.success("Google Login successful!");
-          
           navigate("/");
         } else {
-
           toast.warn("Email Doesn't exist");
           setFormData(true);
         }
       });
     }
+  };
+  
+  useEffect(() => {
+    handleGoogleSignInEffect(value);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]); // useEffect will run when value changes
 
   
@@ -183,20 +153,20 @@ function onSignup(){
       axios
         .post("/api/login", formData)
         .then((response) => {
+          
           if (response?.data?.status === true) {
-            localStorage.setItem("userAccessToken", response.data.token);
-            dispatch(setUserDetails({ payload: response.data }));
-            dispatch(loginSuccess());
+            localStorage.setItem("userAccessToken", response.data.user.userData.token);
+            dispatch(setUserDetails({ payload: response.data.user.userData }));
             toast.success("Login Success");
             navigate("/");
           } else if (response.data.blocked) {
-            dispatch(userBlocked());
+            // dispatch(userBlocked());
             setFormErrors({
               ...formErrors,
               general: "User blocked by Admin !", // Set a general error message
             });
           } else {
-            dispatch(loginFailure());
+            // dispatch(loginFailure());
             setFormErrors({
               ...formErrors,
               general: "Invalid Email or Password", // Set a general error message
@@ -319,17 +289,15 @@ function onSignup(){
               id="phoneNumber"
               name="phoneNumber"
               type="text"
-              onChange={handleOtpNumber}
-              value={phone}
               required
               className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-white"
-              
+              placeholder="Phone Number"
             />
             <div style={{ height: "20px" }}></div>
           </div>
           <div>
             <button
-              onClick={onSignup}
+              
               type="button"
               className="group relative w-full flex justify-center py-2 px-4 mb-7 border border-transparent text-sm font-medium rounded-md text-white bg-[#030712] hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:bg-[#030712]"
             >
