@@ -74,13 +74,12 @@ setPhone(e.target.value)
       const response = await axios.post('/api/checkPhoneNumber', {
         phone,
       });
-  console.log(response.data.status,"jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
       if(response.data.status===true){
   return true
-      }  // Return true if the phone number exists, false otherwise
+      } 
     } catch (error) {
       console.error(error);
-      return false; // Assume it doesn't exist in case of an error
+      return false; 
     }
   };
 
@@ -111,9 +110,21 @@ setPhone(e.target.value)
   function verifyOtp(){
     const enteredOtp = otp.join('');
     window.confirmationResult.confirm(enteredOtp).then(async(res)=>{
-      
-      navigate("/signup");
-
+   
+      console.log(phone,"nnnnnnnnewwwwwwwwwwww");
+      axios.post("/api/otpLogin",{ phone: phone }).then((response)=>{
+        console.log(response.data.status);
+        if (response.data.status) {
+          localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
+          dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
+          toast.success("OTP Login successful!");
+          navigate("/");
+        } else {
+          toast.warn("Somthing Error");
+          setFormData(true);
+        }
+      })
+     
     })
   }
   
