@@ -25,8 +25,9 @@ function Login() {
   });
 
   const dispatch = useDispatch();
-
+  
   const [otpForm, setOtpForm] = useState(false);
+  const [otpInputForm, setOtpInpuForm] = useState(false);
   const [phone,setPhone]=useState("")
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
@@ -96,7 +97,8 @@ setPhone(e.target.value)
     signInWithPhoneNumber(auth, ph, appVerifier)
       .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
-        toast.success("OTP sent successfully");
+        toast.success("OTP sent to your Number");
+        setOtpInpuForm(true)
       })
       .catch((error) => {
         console.log(error);
@@ -335,7 +337,8 @@ setPhone(e.target.value)
       {otpForm && (
         
         <div>
-          <div>
+          
+        <div>
             <label htmlFor="phoneNumber" className="text-gray-300">
               Phone Number
             </label>
@@ -360,8 +363,12 @@ setPhone(e.target.value)
               Send OTP
             </button>
           </div>
-          <div id="recaptcha-container" className="mb-5"></div>
-          <div className="flex justify-between items-center">
+
+         <div id="recaptcha-container" className="mb-5"></div>
+
+
+         {otpInputForm && (
+  <div className="flex justify-between items-center">
          
     
           {otp.map((value, index) => (
@@ -378,19 +385,23 @@ setPhone(e.target.value)
       onChange={(e) => handleOtpChange(index, e.target.value)}
       ref={inputRefs[index]}
     />
-  ))}
-<button
-  className="bg-teal-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus-outline-none focus-shadow-outline"
+  ))}<button
+  className={`bg-teal-500 text-white font-bold py-2 px-4 rounded focus-outline-none focus-shadow-outline ${
+    otp.some(value => value === '') ? 'disabled-button' : 'hover-enabled-button'
+  }`}
   type="button"
   onClick={verifyOtp}
+  disabled={otp.some(value => value === '')}
 >
   Verify
 </button>
-      
-  
+
+
 
           </div>
-          {/* FontAwesomeIcon and other OTP-related elements */}
+)}
+
+       
         </div>
       )}
    
