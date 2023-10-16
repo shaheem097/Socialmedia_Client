@@ -5,7 +5,7 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-  purge: ['./src/Component/user/auth/Signup.jsx','./src/Component/user/auth/Login.jsx'],
+  purge: ['./src/pages/user/Signup.jsx','./src/pages/user/Login.jsx'],
   // ...
 }
 

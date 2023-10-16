@@ -109,40 +109,66 @@ setPhone(e.target.value)
   }
   };
   
-  function verifyOtp(){
+  function verifyOtp() {
     const enteredOtp = otp.join('');
-    window.confirmationResult.confirm(enteredOtp).then(async(res)=>{
-   
-      console.log(phone,"nnnnnnnnewwwwwwwwwwww");
-      axios.post("/api/otpLogin",{ phone: phone }).then((response)=>{
-        console.log(response.data.status);
-        if (response.data.status) {
-          localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
-          dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
-          toast.success("OTP Login successful!");
-          navigate("/");
-        } else {
-          toast.warn("Somthing Error");
-          setFormData(true);
-        }
+    window.confirmationResult.confirm(enteredOtp)
+      .then(async (res) => {
+        axios.post("/api/otpLogin", { phone: phone })
+          .then((response) => {
+            console.log(response.data.status);
+            if (response.data.status) {
+              localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
+              dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
+              toast.success("OTP Login successful!");
+              navigate("/");
+            } else {
+              toast.warn("Something Error");
+              setFormData(true);
+            }
+          })
+          .catch((error) => {
+            if (error.code === "auth/invalid-verification-code") {
+              toast.error("Invalid OTP. Please try again.");
+            } else {
+              toast.error("An error occurred. Please try again later.");
+            }
+            setFormData(true);
+          });
       })
-     
-    })
+      .catch((error) => {
+        if (error.code === "auth/invalid-verification-code") {
+          toast.error("Invalid OTP. Please try again.");
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+        setFormData(true);
+      });
   }
+  
   
 
   const [value, setValue] = useState(null)
-  
   const handleGoogleSignIn = async (e) => {
-    signInWithPopup(auth, provider).then(async (data) => {
-      const email = data.user.email;
-  
-      const googleUser = {
-        email,
-      };
-      setValue(googleUser); // This will trigger the useEffect
-    });
+    signInWithPopup(auth, provider)
+      .then(async (data) => {
+        const email = data.user.email;
+        const googleUser = {
+          email,
+        };
+        setValue(googleUser);
+      })
+      .catch((error) => {
+        if (error.code === 'auth/popup-closed-by-user') {
+          // Handle the case where the user closed the popup
+          // You can display an error message or take other actions here
+          console.log('Google Sign-In popup closed by the user');
+        } else {
+          // Handle other Firebase authentication errors here
+          console.error('Firebase Sign-In Error:', error);
+        }
+      });
   };
+  
   const handleGoogleSignInEffect = (googleUser) => {
     if (googleUser) {
       console.log(googleUser, "hgjhghghhhghgfhg");

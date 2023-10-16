@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch} from "react-redux";
 import { toast } from 'react-toastify';
-import {setUserDetails} from "../../../Redux/Reducers/Auth/singleReducer"
+import {setUserDetails} from "../../Redux/Reducers/Auth/singleReducer"
 import 'react-toastify/dist/ReactToastify.css';
 import {
   AppBar,

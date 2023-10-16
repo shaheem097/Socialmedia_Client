@@ -5,8 +5,6 @@ import { setUserDetails } from "../../Redux/Reducers/Auth/singleReducer";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-// import { sendSignInLinkToEmail } from "firebase/auth";
-// import { auth} from "../../../firebase/config.js";
 
 
 function Signup() {

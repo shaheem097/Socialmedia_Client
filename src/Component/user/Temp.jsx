@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../../Axios/axios";
+import axios from "../../Axios/axios";
 import { toast } from "react-toastify";
 // import {loginFailure,loginSuccess,userBlocked} from "../../../Redux/Reducers/Auth/loginReducer.jsx";
 import { useDispatch } from "react-redux";
-import { setUserDetails } from "../../../Redux/Reducers/Auth/singleReducer";
+import { setUserDetails } from "../../Redux/Reducers/Auth/singleReducer";
 import { useRef } from "react";
 import { RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../../firebase/config.js";
+import { auth, provider } from "../../firebase/config.js";
 import { useEffect } from "react";
 
 

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import axios from '../../Axios/axios';
 import { toast } from 'react-toastify';
 import { setAdmin } from '../../Redux/Reducers/Auth/adminAuthReducer';
-import { loginSuccess } from '../../Redux/Reducers/Auth/loginReducer';
 
 
 function AdminLogin() {
