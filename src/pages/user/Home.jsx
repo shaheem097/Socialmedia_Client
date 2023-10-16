@@ -1,19 +1,19 @@
 import React from 'react';
-import Header from '../../Component/user/Header/Header';
+import Header from '../../Component/user/Header';
 
 
 function Home() {
 
   
   return (
-    <div className="bg-gray-100 min-h-screen ">
+    <div className="bg-[#030712] min-h-screen ">
       {/* Header */}
    <Header/>
 
       {/* Main Content */}
       <main className="container mx-auto p-4">
         {/* Post 1 */}
-        <div className="min-h-screen flex items-center justify-center bg-[#091C1B] py-12 px-4 sm:px-6 lg:px-8 ">
+        <div className="min-h-screen flex items-center justify-center bg-[#030712] py-12 px-4 sm:px-6 lg:px-8 ">
           {/* User Info */}
           
 

@@ -12,7 +12,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 
-
 <link href="/public/build/tailwind.css" rel="stylesheet"></link>
 
 
