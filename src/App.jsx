@@ -1,16 +1,16 @@
-import './App.css';
+
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import Signup from './Component/user/auth/Signup';
-import Login from './Component/user/auth/Login';
+import Signup from './pages/user/Signup';
+import Login from './pages/user/Login';
 import Home from './pages/user/Home.jsx';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import AdminLogin from './Component/admin/AdminLogin';
+import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard.jsx';
 
 function App() {
