@@ -7,3 +7,6 @@
   cursor: not-allowed;
   /* You can add more styles as needed for the disabled state */
 }
+html, body {
+  height: 100%;
+}
