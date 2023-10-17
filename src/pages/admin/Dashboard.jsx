@@ -4,12 +4,13 @@ import Sidebar from '../../Component/admin/Sidebar';
 import UserManagment from '../../Component/admin/UserManagment';
 import Report from '../../Component/admin/Report';
 import PostManagment from '../../Component/admin/PostManagment';
+import AdminHome from '../../Component/admin/AdminHome';
 import AdminHeader from '../../Component/admin/AdminHeader';
 
 
 function Dashboard() {
 
-  const [activePage, setActivePage] = useState('user'); // Default to User Management
+  const [activePage, setActivePage] = useState('dashboard'); // Default to User Management
 
     return (
       <div className="h-screen bg-gray-900">
@@ -24,7 +25,9 @@ function Dashboard() {
       <Sidebar setActivePage={setActivePage} />
     </div>
     <div className="h-4/4 w-1"></div>
-    <div className="flex-1 p-4 bg-[#030712] mr-2 rounded-lg" style={{ border: '2px solid #155e75' }}>
+    <div className="flex-1 p-4 bg-[#030712] mr-2 text-white rounded-lg" style={{ border: '2px solid #155e75' }}>
+
+      {activePage === 'dashboard' && <AdminHome />}
       {activePage === 'user' && <UserManagment />}
       {activePage === 'post' && <PostManagment />}
       {activePage === 'report' && <Report />}
