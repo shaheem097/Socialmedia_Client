@@ -10,3 +10,15 @@
 html, body {
   height: 100%;
 }
+
+/* Add this to your CSS stylesheet */
+.icon-image {
+  width: 24px; /* Change this to your desired fixed width in pixels */
+  height: 24px; /* Change this to your desired fixed height in pixels */
+}
+@media (max-width: 730px) {
+  .responsive-table {
+    font-size: 14px; /* Decrease font size */
+    padding: 4px; /* Adjust padding */
+  }
+}

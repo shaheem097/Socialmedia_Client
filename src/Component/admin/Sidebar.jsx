@@ -61,22 +61,19 @@ function Sidebar({ setActivePage }) {
           </button>
         </div>
 
-      <div class="my-2 border  border-[#155e75] rounded-lg">
+      <div class="my-2 border border-[#155e75] rounded-lg">
         <button
           onClick={() => setActivePage('user')}
           class="hover:bg-[#083344] p-2 rounded w-full md:flex md:items-center md:justify-start relative"
         >
           <div class="line"></div>
-          <img
-         src="/assets/user.png"
-          alt="User Icon"
-          class="w-6 h-6 md:w-6 md:h-6 mr-2"
-        />
+          <img src="/assets/user.png" alt="Dashboard Icon" class="icon-image mr-2" />
+
           <span class="hidden md:inline">User Management</span>
         </button>
       </div>
   
-        <div class="my-2 border  border-[#155e75] rounded-lg">
+        {/* <div class="my-2 border  border-[#155e75] rounded-lg">
           <button
             onClick={() => setActivePage('post')}
             class="hover:bg-[#083344] p-2 rounded w-full md:flex md:items-center md:justify-start relative"
@@ -89,7 +86,7 @@ function Sidebar({ setActivePage }) {
         />
             <span class="hidden md:inline">Post Management</span>
           </button>
-        </div>
+        </div> */}
   
         <div class="my-2 border border-[#155e75] rounded-lg">
           <button
