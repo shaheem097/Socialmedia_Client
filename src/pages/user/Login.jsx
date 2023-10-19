@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../Axios/axios";
 import { toast } from "react-toastify";
-// import {loginFailure,loginSuccess,userBlocked} from "../../../Redux/Reducers/Auth/loginReducer.jsx";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "../../Redux/Reducers/Auth/singleReducer";
 import { useRef } from "react";
@@ -72,12 +71,15 @@ setPhone(e.target.value)
   const checkPhoneExistence = async (phone) => {
   
     try {
-      const response = await axios.post('/api/checkPhoneNumber', {
+      const response = await axios.post('/checkPhoneNumber', {
         phone,
       });
       if(response.data.status===true){
   return true
       } 
+      else if(response.data.blocked===true){
+        return {blocked:true}
+      }
     } catch (error) {
       console.error(error);
       return false; 
@@ -90,7 +92,7 @@ setPhone(e.target.value)
 
    const phoneExists = await checkPhoneExistence(phone);
 
-   if (phoneExists) {
+   if (phoneExists&&!phoneExists.blocked) {
     const appVerifier = window.recaptchaVerifier;
     const ph = '+91' + phone;
     console.log(ph);
@@ -103,9 +105,13 @@ setPhone(e.target.value)
       .catch((error) => {
         console.log(error);
       });
-  } else {
-    // Show an error message that the phone number doesn't exist
-    toast.error("Phone number doesn't exist");
+  } 
+  else if(phoneExists.blocked){
+    console.log("blocked by adminnnnnnnnnn");
+    toast.error("User blocked by Admin");
+  }
+  else {
+        toast.error("Phone number doesn't exist");
   }
   };
   
@@ -113,9 +119,10 @@ setPhone(e.target.value)
     const enteredOtp = otp.join('');
     window.confirmationResult.confirm(enteredOtp)
       .then(async (res) => {
-        axios.post("/api/otpLogin", { phone: phone })
+        axios.post("/otpLogin", { phone: phone })
           .then((response) => {
             console.log(response.data.status);
+            
             if (response.data.status) {
               localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
               dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
@@ -159,11 +166,10 @@ setPhone(e.target.value)
       })
       .catch((error) => {
         if (error.code === 'auth/popup-closed-by-user') {
-          // Handle the case where the user closed the popup
-          // You can display an error message or take other actions here
+        
           console.log('Google Sign-In popup closed by the user');
         } else {
-          // Handle other Firebase authentication errors here
+       
           console.error('Firebase Sign-In Error:', error);
         }
       });
@@ -172,13 +178,17 @@ setPhone(e.target.value)
   const handleGoogleSignInEffect = (googleUser) => {
     if (googleUser) {
       console.log(googleUser, "hgjhghghhhghgfhg");
-      axios.post("/api/google", googleUser).then((response) => {
+      axios.post("/google", googleUser).then((response) => {
+        console.log(response.data.blocked,"ssssssssssssssssssssss");
         if (response.data.status) {
           localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
           dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
           toast.success("Google Login successful!");
           navigate("/");
-        } else {
+        } else if(response.data.blocked){
+          toast.error("User blocked by admin!");
+        }
+        else {
           toast.warn("Email Doesn't exist");
           setFormData(true);
         }
@@ -188,8 +198,8 @@ setPhone(e.target.value)
   
   useEffect(() => {
     handleGoogleSignInEffect(value);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]); // useEffect will run when value changes
+ 
+  }, [value]);
 
   
 
@@ -233,27 +243,22 @@ setPhone(e.target.value)
     if (Object.keys(errors).length === 0) {
       // Send user input data to the backend using Axios
       axios
-        .post("/api/login", formData)
+        .post("/login", formData)
         .then((response) => {
-          
+
+
           if (response?.data?.status === true) {
+           
             localStorage.setItem("userAccessToken", response.data.user.userData.token);
             dispatch(setUserDetails({ payload: response.data.user.userData }));
             toast.success("Login Success");
             navigate("/");
           } else if (response.data.blocked) {
-            // dispatch(userBlocked());
-            setFormErrors({
-              ...formErrors,
-              general: "User blocked by Admin !", // Set a general error message
-            });
+          
+            toast.error("User blocked by Admin");
+           
           } else {
-            // dispatch(loginFailure());
-            setFormErrors({
-              ...formErrors,
-              general: "Invalid Email or Password", // Set a general error message
-            });
-            toast.warn("Invalid Email or Password !");
+              toast.warn("Invalid Email or Password !");
           }
         })
         .catch((error) => {

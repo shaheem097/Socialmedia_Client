@@ -84,7 +84,7 @@ function Signup() {
    
       //   const response = await sendSignInLinkToEmail(auth, email, actionCodeSettings);
    
-            axios.post("/api/signup", formData).then((response) => {
+            axios.post("/signup", formData).then((response) => {
               console.log("vannnnnnnnnnnnn");
               if (response?.data?.token?.status === true) {
                 localStorage.setItem("userAccessToken", response?.data?.token?.userData?.token);
