@@ -18,7 +18,7 @@ function UserManagement() {
 
 const [users,setUser]=useState([]);
 const [page, setPage] = useState(1);
-const userPage=2
+const userPage=5
   const fetchAllUsers=async()=>{
     try{
       const response=await axios.get("/admin/view-users")

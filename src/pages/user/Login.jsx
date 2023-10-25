@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../../Axios/axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { setUserDetails } from "../../Redux/Reducers/Auth/singleReducer";
+import { setUserDetails } from "../../Redux/Reducers/singleReducer";
 import { useRef } from "react";
 import { RecaptchaVerifier, signInWithPhoneNumber, signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase/config.js";
@@ -45,6 +45,7 @@ function Login() {
       newOtp[index] = value;
       setOtp(newOtp);
       if (index < 5) {
+        
         inputRefs[index + 1].current.focus(); 
       }
     }
@@ -342,15 +343,7 @@ setPhone(e.target.value)
     className="flex items-center justify-center flex-grow bg-[#f43f5e] hover:bg-blue-600 text-white cursor-pointer rounded-md p-2 h-10"
   >
     <span>Login using OTP</span>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-4 w-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-    </svg>
+   
   </button>
 
   <button

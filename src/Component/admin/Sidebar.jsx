@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import { useDispatch} from "react-redux";
 import withReactContent from "sweetalert2-react-content";
-import {setAdmin} from '../../Redux/Reducers/Auth/adminAuthReducer'
+import {setAdmin} from '../../Redux/Reducers/adminAuthReducer'
 
 function Sidebar({ setActivePage }) {
  const navigate=useNavigate()

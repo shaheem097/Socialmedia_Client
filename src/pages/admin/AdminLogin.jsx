@@ -3,7 +3,7 @@ import {useNavigate } from 'react-router-dom';
 import { useDispatch} from "react-redux";
 import axios from '../../Axios/axios';
 import { toast } from 'react-toastify';
-import { setAdmin } from '../../Redux/Reducers/Auth/adminAuthReducer';
+import { setAdmin } from '../../Redux/Reducers/adminAuthReducer';
 
 
 function AdminLogin() {
@@ -72,7 +72,7 @@ function AdminLogin() {
         if (Object.keys(errors).length === 0) {
           // Send user input data to the backend using Axios
           axios
-            .post('/api/admin/login', formData)
+            .post('/admin/login', formData)
             .then((response) => {
               if (response?.data?.status === true) {
                 localStorage.setItem("adminAccessToken", response.data.data.token);

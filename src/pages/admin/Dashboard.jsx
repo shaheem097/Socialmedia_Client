@@ -18,9 +18,11 @@ function Dashboard() {
     <div className="h-2"></div>
   
     <div className="flex h-screen bg-gray-900">
-      <div className="md:flex-shrink-0 w-14 md:w-64 bg-[#030712] text-white ml-3 rounded-lg h-83" style={{ border: '2px solid #083344' }}>
-        <Sidebar setActivePage={setActivePage} />
-      </div>
+    <div className="md:flex-shrink-0 w-14 md:w-64 bg-[#030712] text-white ml-3 rounded-lg" style={{ border: '2px solid #083344', height: '100vh' }}>
+          <div style={{ position: 'sticky', top: '0', height: '100%' }}>
+            <Sidebar setActivePage={setActivePage} />
+          </div>
+        </div>
       <div className="h-4/4 w-1"></div>
       <div className="flex-1 p-4 bg-[#030712] mr-2 text-white rounded-lg" style={{ border: '2px solid #083344', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
        {activePage === 'dashboard' && <AdminHome />}

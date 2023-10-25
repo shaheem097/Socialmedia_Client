@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { store, persistor } from "./Redux/store.jsx";
+import { store, persistore } from "./Redux/store.jsx";
 import { ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -21,7 +21,7 @@ root.render(
   <React.StrictMode>
 
     <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
+    <PersistGate loading={null} persistor={persistore}>
       <ToastContainer
         position="top-center"
         autoClose={2000}

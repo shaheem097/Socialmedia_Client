@@ -3,8 +3,9 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux'; // Add this line
 
-import singleUser from './Reducers/Auth/singleReducer'
-import adminReducer from './Reducers/Auth/adminAuthReducer';
+import singleUser from './Reducers/singleReducer'
+import adminReducer from './Reducers/adminAuthReducer';
+import themeReducer from './Reducers/themeSlice'
 
 const persistConfig = {
     key: 'root',
@@ -16,7 +17,8 @@ const persistConfig = {
     persistConfig,
     combineReducers({
        user:singleUser,
-       admin: adminReducer
+       admin: adminReducer,
+       theme:themeReducer,
 
     })
   );
@@ -25,9 +27,9 @@ const persistConfig = {
     reducer: persistedReducer,
 
   });
-  const persistor = persistStore(store);
+  const persistore = persistStore(store);
   
 
   
-  export { store, persistor };
+  export { store, persistore };
   

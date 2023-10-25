@@ -9,6 +9,7 @@
 }
 html, body {
   height: 100%;
+  overflow-y: hidden;
 }
 
 /* Add this to your CSS stylesheet */
@@ -21,4 +22,18 @@ html, body {
     font-size: 14px; /* Decrease font size */
     padding: 4px; /* Adjust padding */
   }
+}
+
+
+@media (max-width: 768px) {
+  .rounded-lg {
+    border: none;
+  }
+}
+
+.fixed-size-image {
+  max-width: 24px; /* Set your desired fixed width */
+  max-height: 24px; /* Set your desired fixed height */
+  width: auto;
+  height: auto;
 }

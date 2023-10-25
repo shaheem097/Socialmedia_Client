@@ -1,108 +1,103 @@
-import React from 'react';
-// import { clearUser } from '../../../Redux/Reducers/Auth/singleReducer';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch} from "react-redux";
-import { toast } from 'react-toastify';
-import {setUserDetails} from "../../Redux/Reducers/Auth/singleReducer"
-import 'react-toastify/dist/ReactToastify.css';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Container,
-  Box,
-  TextField,
-} from '@mui/material';
+/* eslint-disable react/prop-types */
+import * as React from "react";
+import { styled, alpha } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import SearchIcon from "@mui/icons-material/Search";
+import { Link } from "react-router-dom";
+import { Stack, Tooltip } from "@mui/material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 
-const Header = () => {
-    const navigate=useNavigate()
-    const dispatch=useDispatch()
-    const handleLogout = () => {
-      const toastStyle = {
-        background: 'orange',
-        color: 'white',
-        padding: '16px',
-        borderRadius: '4px',
-        textAlign: 'center',
-      };
-    
-      const buttonContainerStyle = {
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginTop: '16px',
-      };
-    
-      const buttonStyle = {
-        background: 'black',
-        color: 'white',
-        border: 'none',
-        padding: '8px 16px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-      };
-      const textStyle = {
-        color: 'black', // Change the text color to black
-      };
-    
-      toast.dark(
-        <div style={toastStyle}>
-       <p style={textStyle}>Are you sure?</p>
-          <div style={buttonContainerStyle}>
-            <button
-              onClick={() => {
-                // Perform delete operation
-                localStorage.removeItem("userAccessToken");
-                // dispatch(clearUser());
-                dispatch(setUserDetails(null));
-                navigate("/login");
-                toast.dismiss(); // Close the toast after confirmation
-              }}
-              style={buttonStyle}
-            >
-              Logout
-            </button>
-            <button
-              onClick={() => toast.dismiss()} // Close the toast if Cancel is clicked
-              style={buttonStyle}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>,
-        {
-          autoClose: false, // Don't auto-close the toast
-          closeOnClick: false, // Don't close the toast when clicked outside
-        }
-      );
-    };
- 
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: "100%",
+  border: `1px solid ${theme.palette.mode === "dark" ? "grey" : "black"}`, // Add border property
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(3),
+    width: "auto",
+  },
+}));
 
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled("input")(({ theme }) => ({
+  color: "inherit",
+  padding: theme.spacing(1, 1, 1, 0),
+  paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+  transition: theme.transitions.create("width"),
+  width: "100%",
+  [theme.breakpoints.up("md")]: {
+    width: "20ch",
+  },
+}));
+
+export default function Header() {
   return (
-    <AppBar position="static" color="default">
-      <Container maxWidth="lg">
+    <Stack
+      direction="row"
+      alignItems="center"
+      sx={{
+        position: "sticky",
+        top: 0,
+        zIndex: 999,
+      }}
+    >
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "#030712",
+          color: "white",
+          py: 1,
+        }}
+      >
         <Toolbar>
-          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-            COSMOBIC
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <TextField
-              variant="outlined"
-              placeholder="Search"
-              sx={{ width: '300px' }}
-            />
-            <Button
-              onClick={handleLogout}
-              variant="contained"
-              color="primary"
-            >
-              Logout
-            </Button>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
-};
+        <Link to={"/"} style={{ textDecoration: "none" }}>
+  <Box>
+    <img
+      src="/assets/logo.png"
+      height="40px"
+      style={{ marginRight: "10px", height: "80px" }} 
+      alt="logo"
+    />
+  </Box>
+</Link>
 
-export default Header;
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ "aria-label": "search" }}
+            />
+          </Search>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          <Tooltip title="Dark Mode" placement="bottom">
+            <DarkModeIcon
+              sx={{
+                color: "white",
+                cursor: "pointer",
+              }}
+            />
+          </Tooltip>
+        </Toolbar>
+      </AppBar>
+    </Stack>
+  );
+}
