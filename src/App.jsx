@@ -35,7 +35,6 @@ function App() {
       <ThemeProvider theme={theme}>
       <CssBaseline />
       <Routes>
-
         <Route path="/" element={userjwtToken ? <Home /> : <Navigate to="/login" />} />
         <Route path="/login" element={!userjwtToken ? <Login /> : <Navigate to="/" />} />
         <Route path="/signup" element={!userjwtToken ? <Signup /> : <Navigate to="/" />} />

@@ -11,11 +11,13 @@ function Sidebar({ setActivePage }) {
  const navigate=useNavigate()
     const dispatch=useDispatch()
 
-    const data = useSelector((store) => store.user?.payload.userExist);
-  console.log(data,'ddddddddddddtttttttttttaaaaa');
+    const data = useSelector((store) => store.user?.userData?.payload);
+  console.log(data,'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+    const userId=data.userId;
 
+    console.log(data.UserName,"tyjddddddddddu");
     const [user, setUser] = useState([]);
-    const [userData, setUserData] = useState([]);
+    const [userData, setUserData] = useState([]); 
 
     // const fetchUser=async()=>{
     //   await axios.get(`/${userId}/user`).then((res)=>{
@@ -63,7 +65,7 @@ function Sidebar({ setActivePage }) {
       </div>
       <p className="text-white" 
         onClick={() => setActivePage('profile')}
-        style={{ marginTop: '10px' }}>Username</p>
+        style={{ marginTop: '10px' }}>{data.UserName}</p>
     </div>
   </div>
 

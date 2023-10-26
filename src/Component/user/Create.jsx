@@ -1,20 +1,49 @@
 import React, { useState } from 'react';
+import cloudinary from 'cloudinary-core'
+import Axios from 'axios';
+import Spinner from '../../Loading';
+import { useSelector } from 'react-redux';
+import axios from '../../Axios/axios';
+
+const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
+
 
 function Create() {
   const [imagePreview, setImagePreview] = useState(null);
+  const [image, setImage] = useState(null);
+  const [video, setVideo] = useState(null);
   const [caption, setCaption] = useState('');
   const [isPostButtonDisabled, setIsPostButtonDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const handleImageChange = (event) => {
+  
+  const user =useSelector((store) => store.user?.userData?.payload);
+  const userId=user.userId;
+
+  const handleFileChange = (event) => {
     const file = event.target.files[0];
+
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImagePreview(reader.result);
-        setCaption(''); // Reset caption when a new image is selected
-        setIsPostButtonDisabled(true); // Disable post button
-      };
-      reader.readAsDataURL(file);
+
+      if (file.type.startsWith('image/')) {
+        setImage(file)
+      
+        // If it's an image, display it directly
+        const reader = new FileReader();
+        reader.onload = () => {
+          
+          setImagePreview(reader.result);
+          setCaption(''); 
+          setIsPostButtonDisabled(true); 
+        };
+        reader.readAsDataURL(file);
+      } else if (file.type.startsWith('video/')) {
+        setVideo(file)
+       
+        setImagePreview('/assets/video-thumbnail.webp'); 
+        setCaption(''); 
+        setIsPostButtonDisabled(true); 
+      }
     }
   };
 
@@ -25,10 +54,77 @@ function Create() {
   };
 
   const handleCancel = () => {
-    setImagePreview(null); // Clear the image preview
-    setCaption(''); // Clear the caption
-    setIsPostButtonDisabled(true); // Disable post button
+    setImagePreview(null); 
+    setImage(null);
+    setVideo(null);
+    setCaption(''); 
+    setIsPostButtonDisabled(true); 
   };
+
+  const handlePost = async() => {
+    
+    let fileUrl;
+    
+    const formData = new FormData();
+    
+
+    if (image) {
+    
+      formData.append('file', image);
+      formData.append('upload_preset', 'image_preset');
+      
+  
+    await  Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/image/upload', formData)
+        .then((response) => {
+          setImage(null);
+          setVideo(null);
+          setImagePreview(null);
+
+           fileUrl=response.data.secure_url
+           console.log(fileUrl);
+           
+        })
+        .catch((error) => {
+          console.error(error, "Image upload error");
+        });
+    } else if (video) {
+     
+      formData.append('file', video);
+      formData.append('upload_preset','video_preset');
+      
+     
+     await Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/video/upload', formData)
+        .then((response) => {
+          setImage(null);
+          setVideo(null);
+          setImagePreview(null);
+          console.log(response, "Video upload response");
+
+           fileUrl=response.data.secure_url
+           console.log(fileUrl);
+
+        })
+        .catch((error) => {
+          console.error(error, "Video upload error");
+        });
+    } 
+
+if(fileUrl){
+  const newPost={
+    caption,
+    fileUrl
+  }
+  await axios.post(`/${userId}`, newPost);
+  setCaption('')
+  setImage(null)
+  setVideo(null)
+  setImagePreview(null);
+}
+    
+    
+  };
+  
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -54,31 +150,30 @@ function Create() {
               id="dropzone-file"
               type="file"
               className="hidden"
-              accept="image/*"
-              onChange={handleImageChange}
+              accept="image/*,video/*"
+              onChange={handleFileChange}
             />
           </label>
         )}
         {imagePreview && (
           <div className="mt-4 ml-6 w-64">
-          <input
-  type="text"
-  placeholder="Enter caption"
-  className="w-full p-2 border rounded bg-gray-900 text-white"
-  value={caption}
-  onChange={handleCaptionChange}
-/>
-
-
+            <input
+              type="text"
+              placeholder="Enter caption"
+              className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-white"
+              value={caption}
+              onChange={handleCaptionChange}
+            />
             <div className="mt-4 flex justify-between">
               <button
-                className={`p-2 rounded ${isPostButtonDisabled ? 'bg-gray-500 text-gray-200' : 'bg-blue-500 text-white'}`}
+              onClick={handlePost}
+                className={`p-2 rounded ${isPostButtonDisabled ? "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2" : "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"}`}
                 disabled={isPostButtonDisabled}
               >
                 Post
               </button>
               <button
-                className="bg-red-500 text-white p-2 rounded"
+                className="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
                 onClick={handleCancel}
               >
                 Cancel
