@@ -44,3 +44,6 @@ html, body {
   align-items: center;
   height: 100vh;
 }
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -4,11 +4,12 @@ import Axios from 'axios';
 import Spinner from '../../Loading';
 import { useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
+import { useNavigate } from 'react-router-dom';
 
 const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
 
 
-function Create() {
+function Create({ onPostSuccess, setHomeActive }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
@@ -16,7 +17,8 @@ function Create() {
   const [isPostButtonDisabled, setIsPostButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  
+  const navigate = useNavigate();
+
   const user =useSelector((store) => store.user?.userData?.payload);
   const userId=user.userId;
 
@@ -62,7 +64,8 @@ function Create() {
   };
 
   const handlePost = async() => {
-    
+    setLoading(true);
+
     let fileUrl;
     
     const formData = new FormData();
@@ -76,9 +79,7 @@ function Create() {
   
     await  Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/image/upload', formData)
         .then((response) => {
-          setImage(null);
-          setVideo(null);
-          setImagePreview(null);
+          
 
            fileUrl=response.data.secure_url
            console.log(fileUrl);
@@ -95,9 +96,7 @@ function Create() {
      
      await Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/video/upload', formData)
         .then((response) => {
-          setImage(null);
-          setVideo(null);
-          setImagePreview(null);
+         
           console.log(response, "Video upload response");
 
            fileUrl=response.data.secure_url
@@ -114,11 +113,20 @@ if(fileUrl){
     caption,
     fileUrl
   }
-  await axios.post(`/${userId}`, newPost);
-  setCaption('')
-  setImage(null)
-  setVideo(null)
-  setImagePreview(null);
+  try {
+    await axios.post(`/${userId}`, newPost);
+    setCaption('');
+    setImage(null);
+    setVideo(null);
+    setImagePreview(null);
+    setLoading(false); // Stop loading
+
+    // Redirect to the home component
+    setHomeActive();
+  } catch (error) {
+    console.error(error, "Error adding new post");
+    setLoading(false); // Stop loading on error
+  }
 }
     
     
@@ -127,8 +135,14 @@ if(fileUrl){
 
 
   return (
+
+
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="w-80 border-2 rounded-lg" style={{ backgroundColor: '#030712' }}>
+  <div className="w-80 border-2 rounded-lg" style={{ backgroundColor: '#030712' }}>
+    {loading ? (
+      <Spinner /> // Display a loading spinner while loading
+    ) : (
+      <>
         {imagePreview ? (
           <img
             className="w-80"
@@ -166,8 +180,12 @@ if(fileUrl){
             />
             <div className="mt-4 flex justify-between">
               <button
-              onClick={handlePost}
-                className={`p-2 rounded ${isPostButtonDisabled ? "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2" : "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"}`}
+                onClick={handlePost}
+                className={`p-2 rounded ${
+                  isPostButtonDisabled
+                    ? "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                    : "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                }`}
                 disabled={isPostButtonDisabled}
               >
                 Post
@@ -181,8 +199,11 @@ if(fileUrl){
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </>
+    )}
+  </div>
+</div>
+
   );
 }
 

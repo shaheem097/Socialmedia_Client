@@ -7,25 +7,14 @@ import {setUserDetails} from '../../Redux/Reducers/singleReducer'
 import axios from '../../Axios/axios';
 
 
+
 function Sidebar({ setActivePage }) {
  const navigate=useNavigate()
     const dispatch=useDispatch()
 
     const data = useSelector((store) => store.user?.userData?.payload);
-  console.log(data,'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
-    const userId=data.userId;
 
-    console.log(data.UserName,"tyjddddddddddu");
-    const [user, setUser] = useState([]);
-    const [userData, setUserData] = useState([]); 
-
-    // const fetchUser=async()=>{
-    //   await axios.get(`/${userId}/user`).then((res)=>{
-    //     setUser(res.data);
-      
-    //   })
-    // }
-
+   
   const handleLogout=()=>{
 
     
@@ -115,6 +104,7 @@ function Sidebar({ setActivePage }) {
       <span class="hidden md:inline">Create</span>
     </button>
   </div>
+ 
 
         <div class="my-2 border border-[#155e75] rounded-lg">
           <button

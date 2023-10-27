@@ -9,7 +9,9 @@ function Home() {
 
   const [activePage, setActivePage] = useState('home');
   
-  
+  const setHomeActive = () => {
+    setActivePage('home');
+  }
   return (
     <div className="h-screen bg-gray-900">
     <div className="h-2"></div>
@@ -22,7 +24,7 @@ function Home() {
       <div className="h-4/4 w-1"></div>
       <div className="flex-1 p-4 mr-2 text-white rounded-lg" style={{ border: '2px solid #083344', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto' }}>
         {activePage === 'home' && <UserHome />}
-        {activePage === 'create' && <Create />}
+        {activePage === 'create' && <Create  setHomeActive={setHomeActive} />}
         {activePage === 'message' && <Message />}
         {activePage === 'profile' && <Profile />}
       </div>
