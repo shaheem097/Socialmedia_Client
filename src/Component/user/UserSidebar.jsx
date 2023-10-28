@@ -46,7 +46,7 @@ function Sidebar({ setActivePage }) {
       <div>
         
       <div className="hidden md:flex flex-col items-center justify-center mb-4 h-72">
-    <div className="text-center" style={{ marginTop: '50px' }}>
+    <div className="text-center  hover:cursor-pointer" style={{ marginTop: '50px' }}>
       <div style={{ width: '100px', height: '100px', borderRadius: '50%', overflow: 'hidden', marginTop: '20px' }}>
         <img src='/assets/man-avatar.webp' 
           onClick={() => setActivePage('profile')}

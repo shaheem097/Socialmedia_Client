@@ -45,7 +45,7 @@ function UserHome() {
               <PostComponent />
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={12} md={4} style={{ display: 'flex', justifyContent: 'center' }}>
+          <Grid item xs={12} sm={12} md={4} style={{marginTop:'40px', display: 'flex', justifyContent: 'center' }}>
             <Suggestwidget />
           </Grid>
         </>

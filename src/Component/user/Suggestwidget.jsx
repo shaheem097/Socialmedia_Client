@@ -88,7 +88,7 @@ function Suggestwidget() {
           {suggestions.map((user, index) => (
             <li key={user._id} className="user-card flex items-center py-3">
               <img
-                className="user-profile-image w-18 h-18 rounded-full mr-3"
+                className="user-profile-image w-18 h-18 rounded-full mr-5"
                 src={user.userProfile || '/assets/man-avatar.webp'}
                 alt={`${user.username}'s profile`}
                 style={{ width: '50px', height: '50px' }} 
@@ -99,14 +99,14 @@ function Suggestwidget() {
                     {user.username}
                   </p>
                 </div>
-                <button
-                  className={`follow-button bg-blue-500 ml-2 text-white px-2 rounded ${
-                    user.isFollowing ? 'bg-red-500' : 'bg-blue-500'
-                  }`}
-                  onClick={() => user.isFollowing ? handleUnfollow(index) : handleFollow(index)}
-                >
-                  {user.isFollowing ? 'Unfollow' : 'Follow'}
+                <button type="button"
+                 class="text-white  hover:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#24292F]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 mr-2 ml-2 "
+                 onClick={() => user.isFollowing ? handleUnfollow(index) : handleFollow(index)}
+                 >
+                
+                 {user.isFollowing ? 'Unfollow' : 'Follow'}
                 </button>
+               
               </div>
             </li>
           ))}

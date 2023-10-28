@@ -1,17 +1,12 @@
-
 import {BrowserRouter,Routes,Route,Navigate,} from "react-router-dom";
 import Signup from './pages/user/Signup';
 import Login from './pages/user/Login';
 import Home from './pages/user/Home.jsx';
-import { useState, useEffect,useMemo } from 'react';
+import { useState, useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import ProfilePage from "./pages/user/ProfilePage";
-import { createTheme } from "@mui/material";
-import { themeSettings } from "./theme";
-import { ThemeProvider,CssBaseline } from "@mui/material";
-import Rashi from "./Component/user/Rashi";
 
 
 function App() {
@@ -25,18 +20,13 @@ function App() {
     setAdminJwtToken(adminAuth)
   }, [auth,adminAuth]);
   
-
-  const mode = useSelector((store) => store.theme.mode);
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
  
-
   return (
     <div className="app">
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
-      <CssBaseline />
+    
       <Routes>
-        <Route path="/rashi" element={ <Rashi /> } />
+       
         <Route path="/" element={userjwtToken ? <Home /> : <Navigate to="/login" />} />
         <Route path="/login" element={!userjwtToken ? <Login /> : <Navigate to="/" />} />
         <Route path="/signup" element={!userjwtToken ? <Signup /> : <Navigate to="/" />} />
@@ -45,7 +35,7 @@ function App() {
         <Route path="/profile/:userId" element={ userjwtToken ?<ProfilePage/> :<Navigate to="/login" />} />
 
       </Routes>
-      </ThemeProvider>
+    
     </BrowserRouter>
     </div>
   );
