@@ -2,6 +2,10 @@ import { useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
 import React, { useEffect, useState } from 'react';
 import { toast } from "react-toastify";
+import Axios  from 'axios';
+import cloudinary from 'cloudinary-core'
+
+const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
 
 function EditProfile({ onClose }) {
 
@@ -9,6 +13,7 @@ function EditProfile({ onClose }) {
     const [selectedImage, setSelectedImage] = useState(userData.dp?userData.dp:'');
     const [updatedData, setUpdatedData] = useState({});
     const [validationErrors, setValidationErrors] = useState({});
+    let fileUrl;
 
    
     const userId= useSelector((store) => store.user?.userData?.payload?.userId);
@@ -86,60 +91,89 @@ function EditProfile({ onClose }) {
         return errors;
       };
 
+      const callProfileUpdate = async () => {
+        const newUserData = {
+          username:updatedData.username,
+          email:updatedData.email,
+          phone:updatedData.phone,
+          bio:updatedData.bio,
+          location:updatedData.location,
+          profileUrl: fileUrl || '',
+
+        };
+        console.log(fileUrl,"settedeeeeeeeeeeeedurllllll");
+        console.log(newUserData, "newuserdataaaaaaaaaaaaaaaaaaa");
+    
+        await axios.put(`/${userId}/profileUpdate`, newUserData).then((response) => {
+          const result = response.data.profileupdated;
+          fileUrl='';
+          console.log(fileUrl,"afterresponseeeeeeeeeeee");
+          setUpdatedData('')
+          setSelectedImage('')
+          onClose()
+          console.log(result);
+        });
+      };
+
       const handleSubmit = async (e) => {
         e.preventDefault();
-        // Send the updated data to the backend
+        
         const errors = validateForm(updatedData);
         if (Object.keys(errors).length > 0) {
-          // Display validation errors below input fields
           setValidationErrors(errors);
           return;
-        } 
-
+        }
+      
+        // Always call the profileUpdate API
         const changedFields = {};
 
-  // Check if username, email, and phone are not the same in userData and updatedData
-  if (userData.username !== updatedData.username) {
-    changedFields.username = updatedData.username;
-  }
-
-  if (userData.email !== updatedData.email) {
-    changedFields.email = updatedData.email;
-  }
-
-  if (userData.phone.toString() !== updatedData.phone) {
-    changedFields.phone = updatedData.phone;
-  }
-
-
-  // Proceed to Step 2: Check for Existing Data only if there are changed fields
-  if (Object.keys(changedFields).length > 0) {
-    try {
-        // const dataExists = await checkExistingData(changedFields);
-        await axios.post('/checkExistingData',changedFields).then((response)=>{
-            if(response?.data?.status===true){
-                console.log(response?.data?.status,"responsssssssssssss");
-            }else{
-                toast.error(response.data.message);
-            }
-        })
-       
-        if(selectedImage){
-            console.log(selectedImage);
-        }else{
-            console.log('no image selected');
+        if (userData.username !== updatedData.username) {
+          changedFields.username = updatedData.username;
         }
-    }
-     
-    catch (error) {
-      console.error('Error checking existing data:', error);
-    }
-
-  }
-
-        
-        
- };
+      
+        if (userData.email !== updatedData.email) {
+          changedFields.email = updatedData.email;
+        }
+      
+        if (userData.phone.toString() !== updatedData.phone) {
+          changedFields.phone = updatedData.phone;
+        }
+      
+      
+        try {
+          // Check existing data
+          await axios.post('/checkExistingData', changedFields).then((response) => {
+            if (response?.data?.status === true) {
+              if (selectedImage) {
+                const formData = new FormData();
+                formData.append('file', selectedImage);
+                formData.append('upload_preset', 'profile_preset');
+      
+                // Upload the image to Cloudinary
+                Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/image/upload', formData).then((response) => {
+                  console.log("Image upload successful. Cloudinary response:", response);
+                  console.log(response.data.secure_url, "fileurlllllllllllllllllllll");
+                  fileUrl = response.data.secure_url;
+                  console.log(fileUrl, "filurllllllllllllllllllllls");
+      
+                  // Call the profileUpdate API
+                  callProfileUpdate();
+                }).catch((error) => {
+                  console.error(error, "profile upload error");
+                });
+              } else {
+                // Call the profileUpdate API if no image is selected
+                callProfileUpdate();
+              }
+            } else {
+              toast.error(response.data.message);
+            }
+          });
+        } catch (error) {
+          console.error('Error checking existing data:', error);
+        }
+      };
+      
     
   return (
     <div className=" flex items-center justify-center">
