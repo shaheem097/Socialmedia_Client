@@ -1,79 +1,56 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom'; // Import useHistory from react-router-dom
-import cloudinary from 'cloudinary-core'
-import Axios from 'axios';
-import Spinner from '../../Loading';
-import { useSelector } from 'react-redux';
-import axios from '../../Axios/axios';
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
+  // Step 1: Form Validation
+  const validationErrors = validateForm(updatedData);
+  if (validationErrors) {
+    // Display validation errors (e.g., with toast) and return
+    return;
+  }
 
-function Create() {
-  const [imagePreview, setImagePreview] = useState(null);
-  const [image, setImage] = useState(null);
-  const [video, setVideo] = useState(null);
-  const [caption, setCaption] = useState('');
-  const [isPostButtonDisabled, setIsPostButtonDisabled] = useState(true);
-  const [loading, setLoading] = useState(false);
-
-  const history = useHistory(); // Initialize history
-
-  const user = useSelector((store) => store.user?.userData?.payload);
-  const userId = user.userId;
-
-  const handleFileChange = (event) => {
-    // ... (no change in this part)
-  };
-
-  const handleCaptionChange = (event) => {
-    // ... (no change in this part)
-  };
-
-  const handleCancel = () => {
-    // ... (no change in this part)
-  };
-
-  const handlePost = async () => {
-    setLoading(true); // Start loading
-
-    // ... (no change in this part)
-
-    if (fileUrl) {
-      const newPost = {
-        caption,
-        fileUrl
-      };
-
-      try {
-        await axios.post(`/${userId}`, newPost);
-        setCaption('');
-        setImage(null);
-        setVideo(null);
-        setImagePreview(null);
-        setLoading(false); // Stop loading
-
-        // Redirect to the home component
-        history.push('/home');
-      } catch (error) {
-        console.error(error, "Error adding new post");
-        setLoading(false); // Stop loading on error
-      }
+  // Step 2: Check for Existing Data
+  try {
+    const dataExists = await checkExistingData(updatedData);
+    if (dataExists) {
+      // Show an error message with toast and return
+      return;
     }
-  };
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="w-80 border-2 rounded-lg" style={{ backgroundColor: '#030712' }}>
-        {/* ... (no change in this part) */}
+    // Step 3: Image Upload (if selectedImage is not null)
+    if (selectedImage) {
+      const imageUrl = await uploadImageToCloudinary(selectedImage);
+      updatedData.dp = imageUrl;
+    }
 
-        {loading ? (
-          <Spinner /> // Display a loading spinner while loading
-        ) : (
-          /* ... (no change in this part) */
-        )}
-      </div>
-    </div>
-  );
-}
+    // Step 4: Update User Details
+    await updateUserData(updatedData);
 
-export default Create;
+    // Close the modal or perform other actions upon successful update
+    onClose();
+  } catch (error) {
+    console.error('Error updating user data:', error);
+    // Handle any other errors that may occur during these operations
+  }
+};
+
+// Define your validation function (Step 1)
+const validateForm = (data) => {
+  // Implement form validation logic and return errors (if any)
+  // Example: check for null values, email format, phone format
+};
+
+// Define the function to check existing data (Step 2)
+const checkExistingData = async (data) => {
+  // Use Axios to check if the provided data already exists in the backend
+  // Return true if data exists, false if it doesn't
+};
+
+// Define the function to upload the image to Cloudinary (Step 3)
+const uploadImageToCloudinary = async (image) => {
+  // Use Cloudinary API to upload the image and return the URL
+};
+
+// Define the function to update user data (Step 4)
+const updateUserData = async (data) => {
+  // Use Axios to send a request to update user details
+};

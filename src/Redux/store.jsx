@@ -5,7 +5,7 @@ import { combineReducers } from 'redux'; // Add this line
 
 import singleUser from './Reducers/singleReducer'
 import adminReducer from './Reducers/adminAuthReducer';
-import themeReducer from './Reducers/themeSlice'
+
 
 const persistConfig = {
     key: 'root',
@@ -18,7 +18,7 @@ const persistConfig = {
     combineReducers({
        user:singleUser,
        admin: adminReducer,
-       theme:themeReducer,
+
 
     })
   );
