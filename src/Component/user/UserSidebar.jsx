@@ -36,6 +36,7 @@ function Sidebar({ setActivePage }) {
         localStorage.removeItem("userAccessToken");
         
         dispatch(setUserDetails(null))
+        
         navigate("/login");
       }
     });

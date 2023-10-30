@@ -1,18 +1,22 @@
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch} from 'react-redux';
 import axios from '../../Axios/axios';
 import React, { useEffect, useState } from 'react';
 import { toast } from "react-toastify";
 import Axios  from 'axios';
 import cloudinary from 'cloudinary-core'
+import { setUserDetails } from "../../Redux/Reducers/singleReducer";
+import { setImageProfile,setUpdatedDetails,} from "../../Redux/Reducers/updatedReducer";
 
 const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
 
 function EditProfile({ onClose }) {
-
+    const dispatch = useDispatch();
+    
     const [userData, setUserData] = useState({});
-    const [selectedImage, setSelectedImage] = useState(userData.dp?userData.dp:'');
+    const [selectedImage, setSelectedImage] = useState(null);
     const [updatedData, setUpdatedData] = useState({});
     const [validationErrors, setValidationErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     let fileUrl;
 
    
@@ -24,7 +28,9 @@ function EditProfile({ onClose }) {
             setUpdatedData({
                 username:response.data.username,
                 email:response.data.email,
-                phone:response.data.phone.toString()
+                phone:response.data.phone.toString(),
+                bio:response.data.bio,
+                location:response.data.location
             })
          
         })
@@ -32,8 +38,14 @@ function EditProfile({ onClose }) {
 
     useEffect(()=>{
      fetchUserData()
-      
+    
     },[userId])
+
+    useEffect(() => {
+        if (userData.dp) {
+            setSelectedImage(userData.dp);
+        }
+    }, [userData.dp]);
 
     const handleImageUpload = (e) => {
       const file = e.target.files[0];
@@ -105,13 +117,11 @@ function EditProfile({ onClose }) {
         console.log(newUserData, "newuserdataaaaaaaaaaaaaaaaaaa");
     
         await axios.put(`/${userId}/profileUpdate`, newUserData).then((response) => {
-          const result = response.data.profileupdated;
-          fileUrl='';
-          console.log(fileUrl,"afterresponseeeeeeeeeeee");
+           
           setUpdatedData('')
           setSelectedImage('')
           onClose()
-          console.log(result);
+          
         });
       };
 
@@ -123,7 +133,9 @@ function EditProfile({ onClose }) {
           setValidationErrors(errors);
           return;
         }
-      
+       
+        setLoading(true);
+        
         // Always call the profileUpdate API
         const changedFields = {};
 
@@ -151,6 +163,7 @@ function EditProfile({ onClose }) {
       
                 // Upload the image to Cloudinary
                 Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/image/upload', formData).then((response) => {
+                    setLoading(false);
                   console.log("Image upload successful. Cloudinary response:", response);
                   console.log(response.data.secure_url, "fileurlllllllllllllllllllll");
                   fileUrl = response.data.secure_url;
@@ -159,6 +172,7 @@ function EditProfile({ onClose }) {
                   // Call the profileUpdate API
                   callProfileUpdate();
                 }).catch((error) => {
+                    setLoading(false);
                   console.error(error, "profile upload error");
                 });
               } else {
@@ -167,10 +181,12 @@ function EditProfile({ onClose }) {
               }
             } else {
               toast.error(response.data.message);
+              setLoading(false);
             }
           });
         } catch (error) {
           console.error('Error checking existing data:', error);
+          setLoading(false);
         }
       };
       
@@ -299,9 +315,15 @@ function EditProfile({ onClose }) {
             onClick={handleSubmit}
               type="submit"
               className="w-1/2 bg-[#06b6d4] text-white p-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:bg-blue-600"
-            >
-              Save
-            </button>
+            > {loading ? (
+                <div className="flex items-center">
+                  <div className="mr-2 border-t-2 border-r-2 border-b-2 border-blue-200 rounded-full w-6 h-6 border-t-blue-500 animate-spin" />
+                  Saving...
+                </div>
+              ) : (
+                'Save'
+              )}
+               </button>
             <button
               onClick={onClose}
               className="w-1/2 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring focus:bg-gray-600"
