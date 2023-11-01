@@ -46,11 +46,21 @@ function Signup() {
 
     const errors = {};
 
-   
-
     if (!formData.username.trim()) {
       errors.username = "Username is required";
+    } else {
+      // Regular expression to allow letters (uppercase and lowercase), numbers, and underscores
+      const usernameRegex = /^[a-zA-Z0-9_]{1,15}$/;
+  
+      if (!usernameRegex.test(formData.username)) {
+        errors.username = "Please enter a valid Username";
+      }
+  
+      if (/\s/.test(formData.username)) {
+        errors.username = "not accept spaces.";
+      }
     }
+  
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       errors.email = "Email is required";
@@ -128,7 +138,7 @@ function Signup() {
       </div>
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
-          <div>
+        <div>
             <label htmlFor="username" className="text-gray-300">
               Username
             </label>
@@ -139,9 +149,15 @@ function Signup() {
               value={formData.username}
               onChange={handleChange}
               className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-white"
+              maxLength="15"
             />
             {formErrors.username && (
               <p className="text-red-500">{formErrors.username}</p>
+            )}
+            {formData.username.length < 15 && (
+              <p className="text-gray-300 text-right">
+                 {15 - formData.username.length}
+              </p>
             )}
           </div>
           <div>

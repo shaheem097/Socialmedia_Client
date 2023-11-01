@@ -23,6 +23,8 @@ function Login() {
     password: "",
   });
 
+ 
+
   const dispatch = useDispatch();
   
   const [otpForm, setOtpForm] = useState(false);
@@ -30,7 +32,12 @@ function Login() {
   const [phone,setPhone]=useState("")
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputRefs = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
-  
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpExpired, setOtpExpired] = useState(false);
+  const [showResendButton, setShowResendButton] = useState(false);
+
+
   const handleOtpChange = (index, value) => {
 
     if (value === '') {
@@ -51,9 +58,7 @@ function Login() {
     }
   };
 
-const handleOtpNumber =(e)=>{
-setPhone(e.target.value)
-}
+
 
   function onCaptchaVerify(){
     if(!window.recaptchaVerifier ){
@@ -75,17 +80,33 @@ setPhone(e.target.value)
       const response = await axios.post('/checkPhoneNumber', {
         phone,
       });
+      console.log(response.data,"dataphon");
       if(response.data.status===true){
+      
   return true
       } 
       else if(response.data.blocked===true){
         return {blocked:true}
       }
+      else if(response.data.status===false){
+       
+        return false
+      }
+      
     } catch (error) {
       console.error(error);
       return false; 
     }
   };
+  const startOtpTimer = () => {
+    const otpExpiryTime = 60; // OTP validity period in seconds
+    setOtpTimer(otpExpiryTime);
+   
+  };
+
+  const handleOtpNumber =(e)=>{
+    setPhone(e.target.value)
+    }
 
   const sentOtp = async() => {
    onCaptchaVerify()
@@ -102,20 +123,77 @@ setPhone(e.target.value)
         window.confirmationResult = confirmationResult;
         toast.success("OTP sent to your Number");
         setOtpInpuForm(true)
+        setOtpSent(true); // OTP is sent
+        startOtpTimer()// Start the OTP timer
       })
       .catch((error) => {
         console.log(error);
       });
   } 
   else if(phoneExists.blocked){
-    console.log("blocked by adminnnnnnnnnn");
+ 
     toast.error("User blocked by Admin");
   }
   else {
         toast.error("Phone number doesn't exist");
   }
   };
+
+  const handleOtpTimerExpiration = () => {
+    
+    setOtpSent(false)
+    setOtpTimer(0);
+    setShowResendButton(true); // Show "Resend OTP" button
+  };
+
+  useEffect(() => {
+    let timerId;
+
+    if (otpSent && otpTimer > 0) {
+      timerId = setInterval(() => {
+        setOtpTimer(otpTimer - 1);
+
+        if (otpTimer <= 0) {
+          clearInterval(timerId);
+          handleOtpTimerExpiration();
+          setOtpExpired(true)
+        }
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(timerId);
+    };
+  }, [otpSent, otpTimer]);
+
   
+  const resendOtp = () => {
+    // Add your logic to resend OTP here
+    // You can call the sentOtp function again to resend OTP
+    sentOtp();
+   
+  };
+
+  let otpRender;
+  if (otpSent) {
+    if (otpTimer > 0 && !otpExpired) {
+      otpRender = (
+        <p className="text-center text-white">
+          OTP expires in {otpTimer} seconds
+        </p>
+      );
+    } else if (showResendButton) {
+      otpRender = (
+        <p className="text-center text-red-500">
+          OTP has expired.{" "}
+          <button onClick={resendOtp} className="text-blue-500 underline">
+            Resend OTP
+          </button>
+        </p>
+      );
+    }
+  }
+
   function verifyOtp() {
     const enteredOtp = otp.join('');
     window.confirmationResult.confirm(enteredOtp)
@@ -420,18 +498,15 @@ setPhone(e.target.value)
   Verify
 </button>
 
-
-
-          </div>
+  </div>
+          
+          
 )}
-
-       
+       <div>{otpRender}</div>
         </div>
       )}
-   
-
   
-        
+
 
 <div className="text-center mt-4">
   <p className="text-sm text-gray-600">

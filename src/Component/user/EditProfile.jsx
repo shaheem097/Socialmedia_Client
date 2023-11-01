@@ -69,10 +69,22 @@ function EditProfile({ onClose }) {
     const validateForm = (data) => {
         const errors = {};
       
+     
         // Validate Username (Required)
         if (!data.username ||!data.username.trim()) {
           errors.username = 'Username is required';
-        }
+        } else {
+            // Regular expression to allow letters (uppercase and lowercase), numbers, and underscores
+            const usernameRegex = /^[a-zA-Z0-9_]{1,15}$/;
+        
+            if (!usernameRegex.test(data.username)) {
+              errors.username = "Please enter a valid Username";
+            }
+        
+            if (/\s/.test(data.username)) {
+              errors.username = "not accept spaces.";
+            }
+          }
       
         // Validate Email (Required)
         if (!data.email || !data.email.trim()) {
@@ -138,6 +150,7 @@ function EditProfile({ onClose }) {
         
         // Always call the profileUpdate API
         const changedFields = {};
+        
 
         if (userData.username !== updatedData.username) {
           changedFields.username = updatedData.username;
@@ -165,14 +178,14 @@ function EditProfile({ onClose }) {
                 Axios.post('https://api.cloudinary.com/v1_1/dhzusekrd/image/upload', formData).then((response) => {
                     setLoading(false);
                   console.log("Image upload successful. Cloudinary response:", response);
-                  console.log(response.data.secure_url, "fileurlllllllllllllllllllll");
+               
                   fileUrl = response.data.secure_url;
-                  console.log(fileUrl, "filurllllllllllllllllllllls");
-      
+                
                   // Call the profileUpdate API
                   callProfileUpdate();
                 }).catch((error) => {
                     setLoading(false);
+                    toast.error("Network error try again !")
                   console.error(error, "profile upload error");
                 });
               } else {
