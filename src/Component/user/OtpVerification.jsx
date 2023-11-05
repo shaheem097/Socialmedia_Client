@@ -183,7 +183,7 @@ function OtpVerification() {
     const enteredOtp = otp.join('');
     window.confirmationResult.confirm(enteredOtp)
       .then(async (res) => {
-        axios.post("/otpLogin", { phone: phone })
+        axios.post("/otpLogin", { phone: phone },{withCredentials:true})
           .then((response) => {
             console.log(response.data.status);
             

@@ -54,9 +54,9 @@ function Login() {
   
   const handleGoogleSignInEffect = (googleUser) => {
     if (googleUser) {
-      console.log(googleUser, "hgjhghghhhghgfhg");
-      axios.post("/google", googleUser).then((response) => {
-        console.log(response.data.blocked,"ssssssssssssssssssssss");
+
+      axios.post("/google", googleUser,{withCredentials:true}).then((response) => {
+    
         if (response.data.status) {
           localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
           dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
@@ -120,7 +120,8 @@ function Login() {
     if (Object.keys(errors).length === 0) {
       // Send user input data to the backend using Axios
       axios
-        .post("/login", formData)
+        .post("/login", formData,{withCredentials:true})
+
         .then((response) => {
 
 

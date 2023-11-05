@@ -1,8 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { combineReducers } from 'redux'; // Add this line
-
+import { combineReducers } from 'redux'; 
 import singleUser from './Reducers/singleReducer'
 import adminReducer from './Reducers/adminAuthReducer';
 import updatedUser from './Reducers/updatedReducer' 

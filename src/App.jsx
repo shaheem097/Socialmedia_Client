@@ -34,6 +34,13 @@ function App() {
         <Route path="/admin" element={ adminJwtToken ?<Dashboard/> :<Navigate to="/admin/login" />} />
         <Route path="/profile/:userId" element={ userjwtToken ?<ProfilePage/> :<Navigate to="/login" />} />
 
+            {/* <Route path="/" element= {<Home />}/>
+            <Route path="/login" element= {<Login />}/>
+            <Route path="/signup" element= {<Signup />}/>
+            <Route path="/admin/login" element= {<AdminLogin />}/>
+            <Route path="/admin" element= {<Dashboard />}/>
+            <Route path="/profile/:userId" element= {<ProfilePage />}/> */}
+
       </Routes>
     
     </BrowserRouter>

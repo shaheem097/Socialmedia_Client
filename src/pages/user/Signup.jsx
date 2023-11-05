@@ -89,11 +89,11 @@ function Signup() {
   }
 
   const sentOtp = async() => {
-    console.log("otp functionil vannu");
+
     onCaptchaVerify()
 
      const appVerifier = window.recaptchaVerifier;
-     console.log(appVerifier,"appverifierr");
+
      const ph = '+91' + formData.phone;
      console.log(ph);
      signInWithPhoneNumber(auth, ph, appVerifier)
@@ -209,15 +209,15 @@ function Signup() {
       errors.phone = "Invalid phone number format";
     }
 
-    if (formData.password.length < 4) {
-      errors.password = "Password must be at least 4 characters long";
+    if (formData.password.length < 5) {
+      errors.password = "Password must be at least 5 characters long";
     }
   
     setFormErrors(errors);
     
     if (Object.keys(errors).length === 0) {
 
-      await axios.post('/checkExistingData', formData).then((response)=>{
+      await axios.post('/checkPhoneExisting', formData).then((response)=>{
         if (response?.data?.status === true) {
          sentOtp()
 
@@ -235,14 +235,14 @@ function Signup() {
        
         axios.post("/signup", formData).then((response) => {
              
-          if (response?.data?.token?.status === true) {
-            localStorage.setItem("userAccessToken", response?.data?.token?.userData?.token);
+          if (response?.data?.UserData?.status === true) {
+            localStorage.setItem("userAccessToken", response?.data?.UserData?.userData?.token);
           
-            dispatch(setUserDetails({ payload: response?.data?.token?.userData}));
+            dispatch(setUserDetails({ payload: response?.data?.UserData?.userData}));
             toast.success("Registration successful!");
             navigate("/");
           } else{
-            toast.error(response.data.token.message);
+            toast.error(response.data.UserData.message);
           }
         });
       }
@@ -329,6 +329,7 @@ function Signup() {
           <button
             type="submit"
             className="w-full bg-[#06b6d4] text-white p-2 rounded-lg mt-4 hover:bg-blue-600 focus:outline-none focus:ring focus:bg-blue-600"
+            disabled={otpSent}
           >
             Sign Up
           </button>
@@ -350,13 +351,16 @@ function Signup() {
       <div id="recaptcha-container" className="mb-5"></div>
 
       {otpInputForm && (
-       
-        <div className="flex justify-between items-center">
+     <div>
+      <div className="h-16">
+       <h3 className="text-center text-white">Enter OTP sent to your mobile number<br/> X X X X X X {formData.phone.slice(-4)}</h3>
+       </div>
+        <div className="flex justify-between h-48  items-center">
 
                 {otp.map((value, index) => (
           <input
             key={index}
-            className="w-12 h-12 text-black text-center border rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500"
+            className="w-12 h-12 text-black text-center  rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500"
             type="text"
             maxLength="1"
             pattern="[0-9]"
@@ -379,7 +383,7 @@ function Signup() {
       </button>    
         </div>
 
-                
+        </div> 
       )}
           <div>{otpSent && !otpExpired && <p className="text-center text-white">OTP expires in {otpTimer} seconds</p>}</div>
       {otpExpired && showResendButton && (

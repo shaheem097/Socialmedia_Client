@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Paper } from '@mui/material';
-import PostComponent from './PostComponent';
-import Suggestwidget from './Suggestwidget';
+import React, { useState, useEffect } from "react";
+import { Grid, Paper } from "@mui/material";
+import PostComponent from "./PostComponent";
+import Suggestwidget from "./Suggestwidget";
 
 function UserHome() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -15,11 +15,11 @@ function UserHome() {
     handleResize();
 
     // Add a listener for window resize events
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Clean up the event listener on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -28,11 +28,26 @@ function UserHome() {
       {isSmallScreen ? (
         // For small screens, display Suggestwidget above PostComponent
         <>
-          <Grid item xs={12} sm={12} md={12} style={{ display: 'flex', justifyContent: 'center' }}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
             <Suggestwidget />
           </Grid>
-          <Grid item xs={12} sm={12} md={12} style={{ display: 'flex', justifyContent: 'center' }}>
-            <Paper elevation={3} style={{ padding: 16, backgroundColor: '#111827', width: '100%' }}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <Paper
+              elevation={3}
+              style={{ padding: 16, backgroundColor: "#111827", width: "100%" }}
+            >
               <PostComponent />
             </Paper>
           </Grid>
@@ -40,12 +55,31 @@ function UserHome() {
       ) : (
         // For larger screens, display in the original order
         <>
-          <Grid item xs={12} sm={12} md={8} style={{ display: 'flex', justifyContent: 'center' }}>
-            <Paper elevation={3} style={{ padding: 16, backgroundColor: '#111827', width: '100%' }}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={8}
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <Paper
+              elevation={3}
+              style={{ padding: 16, backgroundColor: "#111827", width: "100%" }}
+            >
               <PostComponent />
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={12} md={4} style={{marginTop:'40px', display: 'flex', justifyContent: 'center' }}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={4}
+            style={{
+              marginTop: "40px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <Suggestwidget />
           </Grid>
         </>

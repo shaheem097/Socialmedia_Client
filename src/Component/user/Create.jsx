@@ -20,7 +20,7 @@ function Create({ onPostSuccess, setHomeActive }) {
   const navigate = useNavigate();
 
   const user =useSelector((store) => store.user?.userData?.payload);
-  const userId=user.userId;
+  const userId=user?.userId;
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
