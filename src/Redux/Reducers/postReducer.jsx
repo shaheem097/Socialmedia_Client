@@ -7,7 +7,8 @@ const initialState = {
   deleted:false,
   profile:false,
   comment:false,
-  liked:false
+  liked:false,
+  userData:{}
 };
 
 const postSlice = createSlice({
@@ -19,6 +20,9 @@ const postSlice = createSlice({
       //   if(post._id==action.payload.post._id) return action.payload.post
       // })
       state.posts = action?.payload;
+    },
+    PostOwnerDetails:(state,action)=>{
+       state.userData=action?.payload;
     },
     setUpdatedPost: (state, action) => {
       console.log(state.posts,'redux');
@@ -53,5 +57,5 @@ const postSlice = createSlice({
   },
 });
 
-export const { setPost,setUpdatedPost,commentLoading,likeLoading, setLoading, deletePost,deletedLoading,profileLoading} = postSlice.actions;
+export const { setPost,setUpdatedPost,commentLoading,likeLoading, setLoading, deletePost,deletedLoading,profileLoading,PostOwnerDetails} = postSlice.actions;
 export default postSlice.reducer ;

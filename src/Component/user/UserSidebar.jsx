@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import withReactContent from "sweetalert2-react-content";
 import { logoutUser } from "../../Redux/Reducers/singleReducer";
 import { setUpdatedDetails,setImageProfile } from "../../Redux/Reducers/updatedReducer";
-import { setPost} from "../../Redux/Reducers/postReducer";
+import { setPost,PostOwnerDetails} from "../../Redux/Reducers/postReducer";
 
 function Sidebar({ setActivePage }) {
   const navigate = useNavigate();
@@ -34,10 +34,12 @@ function Sidebar({ setActivePage }) {
         // Perform delete operation
  
 
-        dispatch(logoutUser());
-       dispatch(setUpdatedDetails(null))
-       dispatch(setImageProfile(null))
-       dispatch(setPost([]))
+      dispatch(logoutUser());
+      dispatch(setUpdatedDetails(null))
+      dispatch(setImageProfile(null))
+      dispatch(setPost([]))
+      dispatch(PostOwnerDetails(null))
+
         navigate("/login");
       }
     });

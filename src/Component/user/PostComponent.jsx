@@ -2,7 +2,7 @@ import React, { useEffect,useState } from 'react';
 import { CardContent, CardHeader, IconButton, Avatar, Typography, Input } from '@mui/material';
 import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPost } from '../../Redux/Reducers/postReducer';
+import { setPost,PostOwnerDetails } from '../../Redux/Reducers/postReducer';
 import moment from 'moment';
 
 
@@ -32,11 +32,11 @@ function PostComponent() {
             console.log(post.userId,"postidddddd");
             const userResponse = await axios.get(`/getUsersData/${post.userId}`);
             usersData[post.userId] = userResponse.data;
-          
-            console.log(usersData,"frontend userdata response");
+           
+            
           }
         }
-  
+        dispatch(PostOwnerDetails(usersData));
         dispatch(setPost(sortedPosts));
         setPosts(sortedPosts);
         setUsersData(usersData);
