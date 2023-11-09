@@ -12,7 +12,7 @@ function Sidebar({ setActivePage }) {
   const dispatch = useDispatch();
 
   const data = useSelector((store) => store.user?.userData?.payload);
-  console.log(data,"selecteeeeeer");
+
   const profilePicture = useSelector((store) => store.update?.image);
   const updatedData = useSelector((store) => store.update?.user);
   

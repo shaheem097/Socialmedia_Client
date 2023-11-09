@@ -22,8 +22,9 @@ function Profile() {
 
   const getUserPosts=async()=>{
     await axios.get(`/userPost/${userId}`).then((response)=>{
+      const reversedPosts = response.data.slice().reverse();
       console.log(response.data,"sssssssssssss");
-      setPosts(response.data);
+      setPosts(reversedPosts);
     })
   }
   
@@ -89,6 +90,7 @@ function Profile() {
                         src={post.post[0]} // Use the first image in the post array or a default image
                         alt={`Post ${index}`}
                         className="rounded-lg object-cover"
+                        style={{ width: '300px', height: '300px' }}
                       />
                     </div>
                   ))
@@ -97,7 +99,7 @@ function Profile() {
                   <div
                     style={{ minHeight: '200px',minWidth: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                   >
-                   <img src="/assets/addpost.gif" alt="" />
+                 
                   </div>
                 )}
          

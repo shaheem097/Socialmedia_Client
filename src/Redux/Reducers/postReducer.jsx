@@ -48,9 +48,10 @@ const postSlice = createSlice({
     },
     likeLoading:(state)=>{
       state.liked = !state.liked
-    }
+    },
+   
   },
 });
 
-export const { setPost,setUpdatedPost,commentLoading,likeLoading, setLoading, deletePost,deletedLoading,profileLoading } = postSlice.actions;
+export const { setPost,setUpdatedPost,commentLoading,likeLoading, setLoading, deletePost,deletedLoading,profileLoading} = postSlice.actions;
 export default postSlice.reducer ;

@@ -4,6 +4,7 @@ import Axios from 'axios';
 import Spinner from '../../Loading';
 import { useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
+import { useNavigate } from 'react-router-dom';
 
 const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
 
@@ -16,7 +17,8 @@ function Create({ onPostSuccess, setHomeActive }) {
   const [isPostButtonDisabled, setIsPostButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
- 
+  const navigate = useNavigate();
+
   const user =useSelector((store) => store.user?.userData?.payload);
   const userId=user?.userId;
 
@@ -130,11 +132,17 @@ if(fileUrl){
     setLoading(false); // Stop loading on error
   }
 }
-  
+    
+    
   };
+  
+
 
   return (
    <div>
+
+    
+
     <div className="flex flex-col items-center justify-center h-screen">
   <div className="w-80 border-2 rounded-lg" style={{ backgroundColor: '#030712' }}>
     {loading ? (

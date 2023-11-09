@@ -1,8 +1,9 @@
 import React, { useEffect,useState } from 'react';
-import { Card, CardContent, CardHeader, IconButton, Avatar, Typography, Input } from '@mui/material';
+import { CardContent, CardHeader, IconButton, Avatar, Typography, Input } from '@mui/material';
 import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost } from '../../Redux/Reducers/postReducer';
+import moment from 'moment';
 
 
 
@@ -10,28 +11,81 @@ function PostComponent() {
   
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
+    const [usersData, setUsersData] = useState({});
 
     const userId = useSelector((store) => store.user?.userData?.payload?.userId);
     
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get(`/getAllPost/${userId}`);
+        console.log(response.data);
+    
+        // Sort the posts in descending order based on the 'createdAt' field.
+        const sortedPosts = response.data.sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+    
+        const usersData = {};
 
-const fetchPosts=async ()=>{
- await axios.get(`/getAllPost/${userId}`).then((response)=>{
-    console.log(response.data);
-    dispatch(setPost(response.data));
-    setPosts(response.data)
- }).catch((err)=>{
-    console.log(err,"error in the get all post");
- })
-}
+        for (const post of sortedPosts) {
+          if (!usersData[post.userId]) {
+            console.log(post.userId,"postidddddd");
+            const userResponse = await axios.get(`/getUsersData/${post.userId}`);
+            usersData[post.userId] = userResponse.data;
+          
+            console.log(usersData,"frontend userdata response");
+          }
+        }
   
-
-
-
+        dispatch(setPost(sortedPosts));
+        setPosts(sortedPosts);
+        setUsersData(usersData);
+      } catch (err) {
+        console.log(err, "error in the get all post");
+      }
+    };
+    
     useEffect(()=>{
      
       fetchPosts()
-
+   
     },[]) 
+
+
+
+useEffect(() => {
+ 
+  const intervalId = setInterval(() => {
+    setPosts((prevPosts) => prevPosts.map(post => ({
+      ...post,
+      relativeTime: getRelativeTime(post.createdAt),
+    })));
+  }, 60000); 
+
+  return () => {
+ 
+    clearInterval(intervalId);
+  };
+}, []);
+
+const getRelativeTime = (createdAt) => {
+  const now = moment();
+  const postTime = moment(createdAt);
+  const minutesDiff = now.diff(postTime, 'minutes');
+  
+  if (minutesDiff < 1) {
+    return 'just now';
+  } else if (minutesDiff < 60) {
+    return `${minutesDiff} minute${minutesDiff > 1 ? 's' : ''} ago`;
+  } else if (minutesDiff < 60 * 24) {
+    const hoursDiff = Math.floor(minutesDiff / 60);
+    return `${hoursDiff} hour${hoursDiff > 1 ? 's' : ''} ago`;
+  } else {
+    // If the post is older than a day, you can customize the format as needed
+    return postTime.format('MMM D, YYYY h:mm A');
+  }
+};
+
 
   return (
    
@@ -41,10 +95,14 @@ const fetchPosts=async ()=>{
       <div style={{ backgroundColor: '#37474F', color: '#ECEFF1', borderRadius: '16px', overflow: 'hidden' , border: '3px solid #083344' }}>
         <CardHeader className="bg-[#030712] "
           avatar={
-            <Avatar src="https://stackdiary.com/140x100.png" alt="" />
+            <Avatar src={usersData[post.userId]?.dp || '/assets/man-avatar.webp'} alt={usersData[post.userId]?.username} />
           }
-          title="External_"
-          subheader="New York City"
+          title={usersData[post.userId]?.username}
+          subheader={
+            <span style={{ color: 'white' }}>
+              {getRelativeTime(post.createdAt)}
+            </span>
+          }
           action={
             <IconButton aria-label="options">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
@@ -53,7 +111,7 @@ const fetchPosts=async ()=>{
             </IconButton>
           }
         />
-        <img src={post.post} alt="" style={{ width: '100%', height: '288px' }} />
+        <img src={post.post} alt="" style={{ width: '320px', height: '340px' }} />
         <CardContent className="bg-[#030712]">
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             {/* ... */}
@@ -61,7 +119,7 @@ const fetchPosts=async ()=>{
   
           <div style={{ marginTop: '0.75rem' }}>
             <Typography variant="body2">
-              <span style={{ fontWeight: 'bold' }}>External_</span> {post.description
+              <span style={{ fontWeight: 'bold' }}>{usersData[post.userId]?.username}</span> {post.description
 }
             </Typography>
           </div>

@@ -21,7 +21,7 @@ function Suggestwidget() {
   useEffect(() => {
     getSuggestions();
   }, []);
-  console.log(suggestions, "suggestions");
+
 
   // Function to handle follow
   const handleFollow = async (index) => {
@@ -30,11 +30,12 @@ function Suggestwidget() {
     setSuggestions(updatedSuggestions);
 
     const friendId = updatedSuggestions[index]._id;
-    console.log(friendId, "ffffffffffrndid");
+    
     try {
       // Send a follow API request with the friendId
       await axios.put(`/${userId}/follow`, { id: friendId }).then((res) => {
-        console.log(res, "foloowwwwww");
+       
+        
       });
     } catch (error) {
       console.error("Error following user:", error);
@@ -53,7 +54,7 @@ function Suggestwidget() {
     try {
       // Send an unfollow API request with the friendId
       await axios.put(`/${userId}/unfollow`, { id: friendId }).then((res) => {
-        console.log(res, "unfolooow");
+       
       });
     } catch (error) {
       console.error("Error unfollowing user:", error);
