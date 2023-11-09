@@ -1,17 +1,38 @@
 import React, { useEffect,useState } from 'react';
 import { Card, CardContent, CardHeader, IconButton, Avatar, Typography, Input } from '@mui/material';
 import axios from '../../Axios/axios';
-function PostComponent() {
-    const [posts, setPost] = useState([]);
-    useEffect(()=>{
-     axios.get('/getAllPost').then((response)=>{
-        console.log(response.data);
+import { useDispatch, useSelector } from 'react-redux';
+import { setPost } from '../../Redux/Reducers/postReducer';
 
-        setPost(response.data)
-     }).catch((err)=>{
-        console.log(err,"error in the get all post");
-     })
-    },[])  
+
+
+function PostComponent() {
+  
+    const dispatch = useDispatch();
+    const [posts, setPosts] = useState([]);
+
+    const userId = useSelector((store) => store.user?.userData?.payload?.userId);
+    
+
+const fetchPosts=async ()=>{
+ await axios.get(`/getAllPost/${userId}`).then((response)=>{
+    console.log(response.data);
+    dispatch(setPost(response.data));
+    setPosts(response.data)
+ }).catch((err)=>{
+    console.log(err,"error in the get all post");
+ })
+}
+  
+
+
+
+    useEffect(()=>{
+     
+      fetchPosts()
+
+    },[]) 
+
   return (
    
     <div>

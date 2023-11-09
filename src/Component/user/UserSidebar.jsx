@@ -4,13 +4,18 @@ import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import withReactContent from "sweetalert2-react-content";
 import { logoutUser } from "../../Redux/Reducers/singleReducer";
+import { setUpdatedDetails,setImageProfile } from "../../Redux/Reducers/updatedReducer";
+import { setPost} from "../../Redux/Reducers/postReducer";
 
 function Sidebar({ setActivePage }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const data = useSelector((store) => store.user?.userData?.payload);
-
+  console.log(data,"selecteeeeeer");
+  const profilePicture = useSelector((store) => store.update?.image);
+  const updatedData = useSelector((store) => store.update?.user);
+  
   const handleLogout = () => {
     const MySwal = withReactContent(Swal);
     MySwal.fire({
@@ -27,10 +32,12 @@ function Sidebar({ setActivePage }) {
     }).then((result) => {
       if (result.isConfirmed) {
         // Perform delete operation
-        localStorage.removeItem("userAccessToken");
+ 
 
         dispatch(logoutUser());
-
+       dispatch(setUpdatedDetails(null))
+       dispatch(setImageProfile(null))
+       dispatch(setPost([]))
         navigate("/login");
       }
     });
@@ -54,9 +61,9 @@ function Sidebar({ setActivePage }) {
                 }}
               >
                 <img
-                  src="/assets/man-avatar.webp"
+                  src={profilePicture ||data.dp || "/assets/man-avatar.webp"} 
                   onClick={() => setActivePage("profile")}
-                  alt="Logo"
+                  alt="profile"
                   className="w-100 h-100 md:w-100 md:h-100 object-cover rounded-full"
                 />
               </div>
@@ -65,7 +72,8 @@ function Sidebar({ setActivePage }) {
                 onClick={() => setActivePage("profile")}
                 style={{ marginTop: "10px" }}
               >
-                {data?.UserName}
+                
+                {updatedData?.username ||data?.UserName}
               </p>
             </div>
           </div>

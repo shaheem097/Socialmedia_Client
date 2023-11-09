@@ -4,7 +4,9 @@ import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux'; 
 import singleUser from './Reducers/singleReducer'
 import adminReducer from './Reducers/adminAuthReducer';
-import updatedUser from './Reducers/updatedReducer' 
+import updatedUser from './Reducers/updatedReducer' ;
+import postReduce from './Reducers/postReducer' ;
+
 
 const persistConfig = {
     key: 'root',
@@ -18,6 +20,7 @@ const persistConfig = {
        user:singleUser,
        admin: adminReducer,
        update:updatedUser,
+       post:postReduce,
 
     })
   );

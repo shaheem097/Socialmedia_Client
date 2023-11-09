@@ -126,9 +126,12 @@ function Login() {
 
 
           if (response?.data?.status === true) {
+
+            console.log("logindataaaaaaaaaa", response?.data?.user?.userData);
            
-            localStorage.setItem("userAccessToken", response.data.user.userData.token);
-            dispatch(setUserDetails({ payload: response.data.user.userData }));
+            localStorage.setItem("userAccessToken", response?.data?.user?.userData?.token);
+            
+            dispatch(setUserDetails({ payload: response.data?.user?.userData }));
             toast.success("Login Success");
             navigate("/");
           } else if (response.data.blocked) {

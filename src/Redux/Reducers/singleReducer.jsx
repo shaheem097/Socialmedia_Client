@@ -7,6 +7,7 @@ const singleUser=createSlice({
     },
     reducers:{
         setUserDetails:(state,action)=>{
+            
             console.log(action.payload,"ppppppppppppppppppppppppppppppppp");
 
             state.userData = action.payload

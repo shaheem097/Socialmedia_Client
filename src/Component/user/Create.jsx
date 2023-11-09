@@ -5,6 +5,8 @@ import Spinner from '../../Loading';
 import { useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
 import { useNavigate } from 'react-router-dom';
+import ImageCrop from 'react-image-crop'; 
+import 'react-image-crop/dist/ReactCrop.css'; 
 
 const cl=cloudinary.Cloudinary.new({cloud_name:'dhzusekrd'})
 
@@ -16,6 +18,8 @@ function Create({ onPostSuccess, setHomeActive }) {
   const [caption, setCaption] = useState('');
   const [isPostButtonDisabled, setIsPostButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [crop, setCrop] = useState({ aspect: 16 / 9 }); // Initial aspect ratio (adjust as needed)
+  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
 
   const navigate = useNavigate();
 
@@ -29,7 +33,7 @@ function Create({ onPostSuccess, setHomeActive }) {
 
       if (file.type.startsWith('image/')) {
         setImage(file)
-      
+        setVideo(null);
         // If it's an image, display it directly
         const reader = new FileReader();
         reader.onload = () => {
@@ -41,13 +45,18 @@ function Create({ onPostSuccess, setHomeActive }) {
         reader.readAsDataURL(file);
       } else if (file.type.startsWith('video/')) {
         setVideo(file)
-       
+        setImage(null);
         setImagePreview('/assets/video-thumbnail.webp'); 
         setCaption(''); 
         setIsPostButtonDisabled(true); 
+      } else {
+        
+        alert('Invalid file type. Please select an image or video.');
+        
       }
     }
   };
+
 
   const handleCaptionChange = (event) => {
     const newCaption = event.target.value;
@@ -72,7 +81,8 @@ function Create({ onPostSuccess, setHomeActive }) {
     
 
     if (image) {
-    
+
+  
       formData.append('file', image);
       formData.append('upload_preset', 'image_preset');
       

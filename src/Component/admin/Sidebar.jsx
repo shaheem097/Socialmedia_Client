@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import { useDispatch} from "react-redux";
 import withReactContent from "sweetalert2-react-content";
-import {setAdmin} from '../../Redux/Reducers/adminAuthReducer'
+import {setAdmin,logoutAdmin} from '../../Redux/Reducers/adminAuthReducer'
 
 function Sidebar({ setActivePage }) {
  const navigate=useNavigate()
@@ -28,9 +28,9 @@ function Sidebar({ setActivePage }) {
     }).then((result) => {
       if (result.isConfirmed) {
         // Perform delete operation
-        localStorage.removeItem("adminAccessToken");
+   
         
-        dispatch(setAdmin(null))
+        dispatch(logoutAdmin())
         navigate("/admin/login");
       }
     });

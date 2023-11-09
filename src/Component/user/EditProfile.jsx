@@ -4,18 +4,21 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Axios from "axios";
 import cloudinary from "cloudinary-core";
-import { useNavigate } from "react-router-dom";
+import {setImageProfile,setUpdatedDetails} from "../../Redux/Reducers/updatedReducer";
+import {setUserDetails} from "../../Redux/Reducers/singleReducer";
 
 const cl = cloudinary.Cloudinary.new({ cloud_name: "dhzusekrd" });
 
 function EditProfile({ onClose }) {
   const dispatch = useDispatch();
- const navigate = useNavigate()
+
   const [userData, setUserData] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [updatedData, setUpdatedData] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [imageSelected, setImageSelected] = useState(false);
+
   
   let fileUrl;
 
@@ -24,13 +27,22 @@ function EditProfile({ onClose }) {
   const fetchUserData = async () => {
     await axios.get(`/${userId}/user`).then((response) => {
       setUserData(response.data);
+      
+      const phone=response?.data?.phone?.toString();
+      console.log(phone,"phoneeeeeeeeeeeeeee");
+
       setUpdatedData({
         username: response?.data?.username,
         email: response?.data?.email,
-        phone: response?.data?.phone.toString(),
+        phone: phone,
         bio: response?.data?.bio,
         location: response?.data?.location,
       });
+      if (response?.data?.dp) {
+        setSelectedImage(response.data.dp);
+      } else {
+        setSelectedImage(null);
+      }
     });
   };
 
@@ -41,9 +53,11 @@ function EditProfile({ onClose }) {
   useEffect(() => {
     if (userData?.dp) {
       setSelectedImage(userData?.dp);
+    } else {
+      setSelectedImage(null);
     }
   }, [userData?.dp]);
-
+  
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -52,6 +66,7 @@ function EditProfile({ onClose }) {
         setSelectedImage(e.target.result);
       };
       reader.readAsDataURL(file);
+      setImageSelected(true);
     }
   };
 
@@ -108,14 +123,21 @@ function EditProfile({ onClose }) {
       phone: updatedData.phone,
       bio: updatedData.bio,
       location: updatedData.location,
-      profileUrl: fileUrl || "",
+      
     };
+    if (imageSelected) {
+      newUserData.profileUrl = fileUrl;
+    }
 
     await axios
       .put(`/${userId}/profileUpdate`, newUserData)
       .then((response) => {
+         console.log(response,"resssssssssssssssss");
+        dispatch(setImageProfile(response.data?.profileupdated?.dp))
+        dispatch(setUpdatedDetails(response.data.profileupdated))
         setUpdatedData("");
         setSelectedImage("");
+
         onClose();
       });
   };
@@ -131,7 +153,6 @@ function EditProfile({ onClose }) {
 
     setLoading(true);
 
-    // Always call the profileUpdate API
     const changedFields = {};
 
     if (userData?.username !== updatedData?.username) {
@@ -148,9 +169,9 @@ function EditProfile({ onClose }) {
 
     try {
       await axios.post("/checkExistingData", changedFields).then((response) => {
-        console.log(response, "responseeeeeeeeeeeeeeee");
+      
         if (response?.data?.status === true) {
-          if (selectedImage) {
+          if (imageSelected) {
             const formData = new FormData();
             formData.append("file", selectedImage);
             formData.append("upload_preset", "profile_preset");
@@ -161,6 +182,7 @@ function EditProfile({ onClose }) {
               formData
             )
               .then((response) => {
+                setImageSelected(false);
                 setLoading(false);
                 console.log(
                   "Image upload successful. Cloudinary response:",
@@ -169,7 +191,6 @@ function EditProfile({ onClose }) {
 
                 fileUrl = response.data.secure_url;
 
-                // Call the profileUpdate API
                 callProfileUpdate();
               })
               .catch((error) => {
@@ -188,8 +209,7 @@ function EditProfile({ onClose }) {
         }
       });
     } catch (error) {
-       
-      console.log("response in profile");
+
       console.error("Error checking existing data:", error);
       setLoading(false);
     }
@@ -201,11 +221,19 @@ function EditProfile({ onClose }) {
         <div className="text-center">
           <div className="mb-4">
             <div className="w-20 h-20 mx-auto rounded-full bg-gray-600  ">
-              <img
-                src={selectedImage || "/assets/man-avatar.webp"}
-                alt="Profile Picture"
-                className="w-full h-full object-cover rounded-full"
-              />
+            {selectedImage || userData.dp ? (
+                <img
+                  src={selectedImage || userData.dp}
+                  alt="Profile Picture"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <img
+                  src="/assets/man-avatar.webp"
+                  alt="Default Profile Picture"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              )}
               <div
                 className="absolute w-6 h-6 ml-16 mt-2"
                 style={{ position: "relative", top: "-25px" }}

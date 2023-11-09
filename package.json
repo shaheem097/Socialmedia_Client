@@ -23,6 +23,7 @@
     "react-auth-kit": "^3.0.0-alpha.15",
     "react-bootstrap": "^2.9.0",
     "react-dom": "^18.2.0",
+    "react-image-crop": "^10.1.8",
     "react-otp-input": "^3.1.0",
     "react-phone-number-input": "^3.3.6",
     "react-redux": "^8.1.3",

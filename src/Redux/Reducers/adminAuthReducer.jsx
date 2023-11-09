@@ -10,11 +10,17 @@ const adminAuth = createSlice({
       console.log(action.payload,"{}{}{}{}{}{}{{}{");
       state.adminData = action.payload  
     },
+    logoutAdmin: (state) => {
+      localStorage.removeItem("adminAccessToken");
+
+      state.adminData = {}; // Reset user data when logging out
+  },
+
   
 }
 });
 
 
 
-export const { setAdmin} = adminAuth.actions;
+export const { setAdmin,logoutAdmin} = adminAuth.actions;
 export default  adminAuth.reducer;
