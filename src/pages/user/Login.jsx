@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../../Axios/axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { setUserDetails } from "../../Redux/Reducers/singleReducer";
+import { setUserDetails,setTokens } from "../../Redux/Reducers/singleReducer";
 import {signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase/config.js";
 import { useEffect } from "react";
@@ -58,8 +58,10 @@ function Login() {
       axios.post("/google", googleUser,{withCredentials:true}).then((response) => {
     
         if (response.data.status) {
-          localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
-          dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
+          localStorage.setItem("userAccessToken", response?.data?.token);
+          
+          dispatch(setUserDetails({ payload: response?.data?.userData }));
+          dispatch(setTokens(response?.data?.token));
           toast.success("Google Login successful!");
           navigate("/");
         } else if(response.data.blocked){
@@ -124,15 +126,18 @@ function Login() {
 
         .then((response) => {
 
+          console.log("logindataaaaaaaaaa", response.data.userData);
 
           if (response?.data?.status === true) {
 
-            console.log("logindataaaaaaaaaa", response?.data?.user?.userData);
-           
-            localStorage.setItem("userAccessToken", response?.data?.user?.userData?.token);
-            
-            dispatch(setUserDetails({ payload: response.data?.user?.userData }));
-            toast.success("Login Success");
+           console.log('hhhhhhhhhhhhhhhhhhhhhhhh');
+            localStorage.setItem("userAccessToken", response?.data?.token);
+
+            dispatch(setUserDetails({ payload: response?.data?.userData}));
+            dispatch(setTokens(response?.data?.token));
+
+         
+            toast.success("Login  Success");
             navigate("/");
           } else if (response.data.blocked) {
           

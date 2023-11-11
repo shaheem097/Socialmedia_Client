@@ -63,10 +63,10 @@ function Sidebar({ setActivePage }) {
                 }}
               >
                 <img
-                  src={profilePicture ||data.dp || "/assets/man-avatar.webp"} 
+                  src={profilePicture || data.dp || "/assets/man-avatar.webp"}
                   onClick={() => setActivePage("profile")}
                   alt="profile"
-                  className="w-100 h-100 md:w-100 md:h-100 object-cover rounded-full"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
               <p
@@ -75,7 +75,7 @@ function Sidebar({ setActivePage }) {
                 style={{ marginTop: "10px" }}
               >
                 
-                {updatedData?.username ||data?.UserName}
+                {updatedData?.username ||data?.username}
               </p>
             </div>
           </div>

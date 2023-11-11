@@ -4,7 +4,7 @@ import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost,PostOwnerDetails } from '../../Redux/Reducers/postReducer';
 import moment from 'moment';
-
+import { motion } from 'framer-motion';
 
 
 function PostComponent() {
@@ -36,7 +36,7 @@ function PostComponent() {
             
           }
         }
-        dispatch(PostOwnerDetails(usersData));
+          dispatch(PostOwnerDetails(usersData));
         dispatch(setPost(sortedPosts));
         setPosts(sortedPosts);
         setUsersData(usersData);
@@ -80,9 +80,11 @@ const getRelativeTime = (createdAt) => {
   } else if (minutesDiff < 60 * 24) {
     const hoursDiff = Math.floor(minutesDiff / 60);
     return `${hoursDiff} hour${hoursDiff > 1 ? 's' : ''} ago`;
+  }  else if (minutesDiff < 60 * 24 * 2) {
+    return '1 day ago';
   } else {
-    // If the post is older than a day, you can customize the format as needed
-    return postTime.format('MMM D, YYYY h:mm A');
+    const daysDiff = Math.floor(minutesDiff / (60 * 24));
+    return `${daysDiff} days ago`;
   }
 };
 
@@ -91,6 +93,11 @@ const getRelativeTime = (createdAt) => {
    
     <div>
          {posts.map((post) => (
+          <motion.div
+          key={post.id}
+          whileHover={{ scale: 1.09, zIndex: 1 }} // Add the scale and zIndex animations on hover
+          transition={{ type: 'spring', stiffness: 300 }} // Add a spring transition for a smooth effect
+        >
     <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ backgroundColor: '#37474F', color: '#ECEFF1', borderRadius: '16px', overflow: 'hidden' , border: '3px solid #083344' }}>
         <CardHeader className="bg-[#030712] "
@@ -127,6 +134,7 @@ const getRelativeTime = (createdAt) => {
         </CardContent>
       </div>
     </div>
+    </motion.div>
           ))}
   </div>
   

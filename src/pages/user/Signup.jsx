@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState} from "react";
 import axios from "../../Axios/axios";
 import { useDispatch } from "react-redux";
-import { setUserDetails } from "../../Redux/Reducers/singleReducer";
+import { setUserDetails,setTokens } from "../../Redux/Reducers/singleReducer";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { signInWithPhoneNumber } from "firebase/auth";
@@ -234,11 +234,14 @@ function Signup() {
 
        
         axios.post("/signup", formData).then((response) => {
-             
-          if (response?.data?.UserData?.status === true) {
-            localStorage.setItem("userAccessToken", response?.data?.UserData?.userData?.token);
+             console.log(response.data);
+          if (response?.data?.status === true) {
+
+            localStorage.setItem("userAccessToken", response?.data?.token);
           
-            dispatch(setUserDetails({ payload: response?.data?.UserData?.userData}));
+            dispatch(setUserDetails({ payload: response?.data?.UserData}));
+            dispatch(setTokens({ payload: response?.data?.token}));
+
             toast.success("Registration successful!");
             navigate("/");
           } else{

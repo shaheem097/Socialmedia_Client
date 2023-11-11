@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { signInWithPhoneNumber } from "firebase/auth";
 import { auth} from "../../firebase/config.js";
 import { RecaptchaVerifier } from "firebase/auth";
-import { setUserDetails } from "../../Redux/Reducers/singleReducer";
+import { setUserDetails,setTokens } from "../../Redux/Reducers/singleReducer";
 
 
 
@@ -185,11 +185,10 @@ function OtpVerification() {
       .then(async (res) => {
         axios.post("/otpLogin", { phone: phone },{withCredentials:true})
           .then((response) => {
-            console.log(response.data.status);
-            
             if (response.data.status) {
-              localStorage.setItem("userAccessToken", response?.data?.response?.userData?.token);
-              dispatch(setUserDetails({ payload: response?.data?.response?.userData }));
+              localStorage.setItem("userAccessToken", response?.data?.token);
+              dispatch(setUserDetails({ payload: response?.data?.userData }));
+              dispatch(setTokens(response?.data?.token));
               toast.success("OTP Login successful!");
               navigate("/");
             } else {

@@ -13,7 +13,8 @@ function App() {
   const [userjwtToken, setJwtToken] = useState("");
   const [adminJwtToken,setAdminJwtToken]=useState("")
 
-  const auth = useSelector((state) => state.user.userData?.payload?.token);
+  const auth = useSelector((state) => state.user?.token);
+
   const adminAuth=useSelector((state)=>state?.admin?.adminData?.payload)
   useEffect(() => {
     setJwtToken(auth);

@@ -23,7 +23,7 @@ function Profile() {
   const getUserPosts=async()=>{
     await axios.get(`/userPost/${userId}`).then((response)=>{
       const reversedPosts = response.data.slice().reverse();
-      console.log(response.data,"sssssssssssss");
+     
       setPosts(reversedPosts);
     })
   }
@@ -52,8 +52,8 @@ function Profile() {
     </div>
 
     <div className="text-center text-white" style={{ position: 'relative', top: '-50px' }}>
-      <h1 className="text-lg font-bold">{updatedData?.username ||data?.UserName}</h1>
-      <p className="text-sm">Bio</p>
+      <h1 className="text-lg font-bold">{updatedData?.username ||data?.username}</h1>
+      <p className="text-sm">{updatedData?.bio ||data?.bio}</p>
       <div className="text-center mt-4" style={{ position: 'relative', top: '-20px' }}>
       <button className="text-white border mt-2 border-gray-900 rounded-lg text-sm hover:text-blue-500" onClick={openModal}>Edit Profile</button>
     </div>
@@ -67,11 +67,11 @@ function Profile() {
       </div>
       <div className="text-white text-md mx-10">
         <span>Followers</span>
-        <span className="block">8</span>
+        <span className="block">{data.followers.length}</span>
       </div>
       <div className="text-white text-md">
         <span>Following</span>
-        <span className="block">7</span>
+        <span className="block">{data.following.length}</span>
       </div>
     </div>
   </div>

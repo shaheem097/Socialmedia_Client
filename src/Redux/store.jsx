@@ -6,7 +6,7 @@ import singleUser from './Reducers/singleReducer'
 import adminReducer from './Reducers/adminAuthReducer';
 import updatedUser from './Reducers/updatedReducer' ;
 import postReduce from './Reducers/postReducer' ;
-
+import followReducer from './Reducers/followReducer';
 
 const persistConfig = {
     key: 'root',
@@ -21,6 +21,7 @@ const persistConfig = {
        admin: adminReducer,
        update:updatedUser,
        post:postReduce,
+       follow:followReducer
 
     })
   );

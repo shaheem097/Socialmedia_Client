@@ -1,11 +1,13 @@
 import axios from "../../Axios/axios";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from 'framer-motion';
+import { setUserDetails } from "../../Redux/Reducers/singleReducer";
 
 function Suggestwidget() {
   const [suggestions, setSuggestions] = useState([]);
   const userId = useSelector((store) => store.user?.userData?.payload?.userId);
-
+  const dispatch = useDispatch();
   const getSuggestions = async () => {
     const { data } = await axios.get(`/find-suggest/${userId}`);
     if (data) {
@@ -34,7 +36,8 @@ function Suggestwidget() {
     try {
       // Send a follow API request with the friendId
       await axios.put(`/${userId}/follow`, { id: friendId }).then((res) => {
-       
+
+       console.log(res.data?.details,"folollowwwwwers");
         
       });
     } catch (error) {
@@ -54,6 +57,7 @@ function Suggestwidget() {
     try {
       // Send an unfollow API request with the friendId
       await axios.put(`/${userId}/unfollow`, { id: friendId }).then((res) => {
+        console.log(res?.data,"unfollowww");
        
       });
     } catch (error) {
@@ -98,10 +102,20 @@ function Suggestwidget() {
       <div className="suggested-users max-h-[320px] overflow-y-scroll hide-scrollbar">
         <ul>
           {suggestions.map((user, index) => (
-            <li key={user._id} className="user-card flex items-center py-3">
+             <motion.div
+             key={user._id} // Make sure to use a unique key for each motion component
+             whileHover={{ scale: 1.1 }}
+             onHoverStart={(e) => {
+               /* Add your onHoverStart logic here if needed */
+             }}
+             onHoverEnd={(e) => {
+               /* Add your onHoverEnd logic here if needed */
+             }}
+           >
+            <li  className="user-card flex items-center py-3">
               <img
                 className="user-profile-image w-18 h-18 rounded-full mr-5"
-                src={user.userProfile || "/assets/man-avatar.webp"}
+                src={user.dp || "/assets/man-avatar.webp"}
                 alt={`${user.username}'s profile`}
                 style={{ width: "50px", height: "50px" }}
               />
@@ -124,6 +138,7 @@ function Suggestwidget() {
                 </button>
               </div>
             </li>
+            </motion.div>
           ))}
         </ul>
       </div>
