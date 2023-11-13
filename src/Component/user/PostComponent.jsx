@@ -1,5 +1,5 @@
 import React, { useEffect,useState } from 'react';
-import { CardContent, CardHeader, IconButton, Avatar, Typography, Input } from '@mui/material';
+import { CardContent, CardHeader, IconButton, Avatar, Typography, Input,Button } from '@mui/material';
 import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost,PostOwnerDetails,likeLoading } from '../../Redux/Reducers/postReducer';
@@ -12,10 +12,14 @@ function PostComponent() {
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [usersData, setUsersData] = useState({});
-    const [liked, setLiked] = useState({});
     const [commentInputs, setCommentInputs] = useState({});
     const [userLikedPosts, setUserLikedPosts] = useState({});
-
+    const [commentText, setCommentText] = useState({});
+    
+    const userId = useSelector((store) => store.user?.userData?.payload?.userId);
+    const username = useSelector((store) => store.user?.userData?.payload?.username);
+  
+    
     const handleCommentClick = (postId) => {
       setCommentInputs((prevInputs) => ({
         ...prevInputs,
@@ -23,7 +27,34 @@ function PostComponent() {
       }));
     };
 
-    const userId = useSelector((store) => store.user?.userData?.payload?.userId);
+    const handleCommentChange = (postId, event) => {
+      setCommentText((prevText) => ({
+        ...prevText,
+        [postId]: event.target.value,
+      }));
+    };
+
+    const addComment = async (postId) => {
+      try {
+       console.log("commented");
+       const data=await axios.put(`/:${postId}/comment`,{
+        userId,
+        comment:commentText[postId],
+        username,
+       })
+       console.log(data,"commentd");
+       setCommentText((prevText) => ({
+        ...prevText,
+        [postId]: "",
+        
+      }));
+      } catch (error) {
+        console.error('Error adding comment:', error);
+      }
+    };
+  
+
+
     
     const fetchPosts = async () => {
       try {
@@ -207,9 +238,42 @@ const getRelativeTime = (createdAt) => {
 </div>
 
                   <div > 
-                {commentInputs[post._id] && (
-                  <Input placeholder="Add a comment..." style={{ width: '100%', padding: '0.25rem 0', backgroundColor: 'transparent', border: 'none', borderRadius: '4px', fontSize: '14px', color: '#ECEFF1' }} />
-                )}
+                  {commentInputs[post._id] && (
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <Input
+      placeholder="Add a comment..."
+      value={commentText[post._id] || ''}
+      onChange={(event) => handleCommentChange(post._id, event)}
+      style={{
+        width: '80%',
+        padding: '0.25rem 0',
+        backgroundColor: 'transparent',
+        border: 'none',
+        borderRadius: '4px',
+        fontSize: '14px',
+        color: '#ECEFF1',
+      }}
+    />
+    {commentText[post._id]?.trim().length > 0 && ( // Check if there is at least one non-space character
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => addComment(post._id)}
+        style={{
+          marginLeft: '0.5rem',
+          padding: '0.2rem 0.5rem', 
+          backgroundColor: 'transparent',
+          border: '1px solid #1976D2', 
+          color: '#1976D2', 
+        }}
+      >
+        Add
+      </Button>
+    )}
+  </div>
+)}
+
                 </div>
         </CardContent>
       </div>
