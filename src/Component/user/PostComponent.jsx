@@ -2,16 +2,26 @@ import React, { useEffect,useState } from 'react';
 import { CardContent, CardHeader, IconButton, Avatar, Typography, Input } from '@mui/material';
 import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPost,PostOwnerDetails } from '../../Redux/Reducers/postReducer';
+import { setPost,PostOwnerDetails,likeLoading } from '../../Redux/Reducers/postReducer';
 import moment from 'moment';
 import { motion } from 'framer-motion';
-
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 function PostComponent() {
   
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [usersData, setUsersData] = useState({});
+    const [liked, setLiked] = useState({});
+    const [commentInputs, setCommentInputs] = useState({});
+    const [userLikedPosts, setUserLikedPosts] = useState({});
+
+    const handleCommentClick = (postId) => {
+      setCommentInputs((prevInputs) => ({
+        ...prevInputs,
+        [postId]: !prevInputs[postId],
+      }));
+    };
 
     const userId = useSelector((store) => store.user?.userData?.payload?.userId);
     
@@ -24,16 +34,18 @@ function PostComponent() {
         const sortedPosts = response.data.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
-    
         const usersData = {};
+
+        const likedPosts = {};
+        sortedPosts.forEach((post) => {
+          likedPosts[post._id] = post.likes.includes(userId);
+        });
+        setUserLikedPosts(likedPosts);
 
         for (const post of sortedPosts) {
           if (!usersData[post.userId]) {
-            console.log(post.userId,"postidddddd");
             const userResponse = await axios.get(`/getUsersData/${post.userId}`);
             usersData[post.userId] = userResponse.data;
-           
-            
           }
         }
           dispatch(PostOwnerDetails(usersData));
@@ -48,12 +60,10 @@ function PostComponent() {
     useEffect(()=>{
      
       fetchPosts()
-   
     },[]) 
 
-
-
 useEffect(() => {
+
  
   const intervalId = setInterval(() => {
     setPosts((prevPosts) => prevPosts.map(post => ({
@@ -87,6 +97,44 @@ const getRelativeTime = (createdAt) => {
     return `${daysDiff} days ago`;
   }
 };
+  const handleLike = async (postId) => {
+    console.log("liked");
+    try {
+      // Make the API call to like the post
+      await axios.put(`/${postId}/like`, { userId });
+
+      // Update the local state with the new like count
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? { ...post, likes: [...post.likes, userId] }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
+  };
+
+  const handleUnLike = async (postId) => {
+    console.log("unliked");
+    try {
+      // Make the API call to unlike the post
+      await axios.put(`/${postId}/unlike`, { userId });
+
+      // Update the local state with the new like count
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? { ...post, likes: post.likes.filter((id) => id !== userId) }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error unliking post:', error);
+    }
+  };
+ 
 
 
   return (
@@ -95,7 +143,7 @@ const getRelativeTime = (createdAt) => {
          {posts.map((post) => (
           <motion.div
           key={post.id}
-          whileHover={{ scale: 1.09, zIndex: 1 }} // Add the scale and zIndex animations on hover
+          whileHover={{ scale: 1.01, zIndex: 1 }} // Add the scale and zIndex animations on hover
           transition={{ type: 'spring', stiffness: 300 }} // Add a spring transition for a smooth effect
         >
     <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -103,19 +151,22 @@ const getRelativeTime = (createdAt) => {
         <CardHeader className="bg-[#030712] "
           avatar={
             <Avatar src={usersData[post.userId]?.dp || '/assets/man-avatar.webp'} alt={usersData[post.userId]?.username} />
+
           }
+          
           title={usersData[post.userId]?.username}
           subheader={
             <span style={{ color: 'white' }}>
               {getRelativeTime(post.createdAt)}
             </span>
           }
+         
           action={
-            <IconButton aria-label="options">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
-                {/* ... */}
-              </svg>
-            </IconButton>
+            <>
+              <IconButton aria-label="options" style={{ color: 'white' }}>
+                <MoreHorizIcon />
+              </IconButton>
+            </>
           }
         />
         <img src={post.post} alt="" style={{ width: '320px', height: '340px' }} />
@@ -124,13 +175,42 @@ const getRelativeTime = (createdAt) => {
             {/* ... */}
           </div>
   
-          <div style={{ marginTop: '0.75rem' }}>
-            <Typography variant="body2">
-              <span style={{ fontWeight: 'bold' }}>{usersData[post.userId]?.username}</span> {post.description
-}
-            </Typography>
-          </div>
-          <Input placeholder="Add a comment..." style={{ width: '100%', padding: '0.25rem 0', backgroundColor: 'transparent', border: 'none', borderRadius: '4px', fontSize: '14px', color: '#ECEFF1' }} />
+          <div style={{ display: 'flex', alignItems: 'center', paddingBottom:'10px' }}>
+  <div style={{ position: 'relative' }}>
+  <img
+  onClick={() => {
+    const isLiked = userLikedPosts[post._id];
+    isLiked ? handleUnLike(post._id) : handleLike(post._id);
+    // Toggle the liked state
+    setUserLikedPosts((prevLiked) => ({
+      ...prevLiked,
+      [post._id]: !isLiked,
+    }));
+  }}
+  src={userLikedPosts[post._id] ? "/assets/unlike.gif" : "/assets/like.gif"}
+  alt=""
+  style={{ height: '25px', width: '25px' }}
+/>
+   {post.likes.length > 0 && (
+      <div style={{ position: 'absolute', bottom: '-16px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', fontSize: '11px', color: 'white', display:'flex'}}>
+      <div> {post.likes.length}</div> <div style={{marginLeft:'2px'}}>{post.likes.length === 1 ? ' like' : ' likes'}</div> 
+      </div>
+    )}
+  </div>
+
+  <img
+    onClick={() => handleCommentClick(post._id)}
+    src="/assets/comment.png"
+    alt=""
+    style={{ height: '20px', width: '20px', marginLeft: '4px' }}
+  />
+</div>
+
+                  <div > 
+                {commentInputs[post._id] && (
+                  <Input placeholder="Add a comment..." style={{ width: '100%', padding: '0.25rem 0', backgroundColor: 'transparent', border: 'none', borderRadius: '4px', fontSize: '14px', color: '#ECEFF1' }} />
+                )}
+                </div>
         </CardContent>
       </div>
     </div>

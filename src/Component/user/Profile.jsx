@@ -8,7 +8,7 @@ function Profile() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-
+  const [user, setUser] = useState(null);
   const profilePicture = useSelector((store) => store.update?.image);
   const data = useSelector((store) => store.user?.userData?.payload);
   const updatedData = useSelector((store) => store.update?.user);
@@ -19,6 +19,19 @@ function Profile() {
   useEffect(() => {
     getUserPosts();
   }, [])
+  
+  useEffect(() => {
+    fetchUser();
+  }, [])
+
+
+const fetchUser=async()=>{
+ 
+  await axios.get(`/${userId}/user`).then((response)=>{
+    console.log(response.data,"response in profileeeeee");
+    setUser(response.data)
+  })
+}
 
   const getUserPosts=async()=>{
     await axios.get(`/userPost/${userId}`).then((response)=>{
@@ -67,11 +80,11 @@ function Profile() {
       </div>
       <div className="text-white text-md mx-10">
         <span>Followers</span>
-        <span className="block">{data.followers.length}</span>
+        <span className="block">{user?.followers.length}</span>
       </div>
       <div className="text-white text-md">
         <span>Following</span>
-        <span className="block">{data.following.length}</span>
+        <span className="block">{user?.following.length}</span>
       </div>
     </div>
   </div>
