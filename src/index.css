@@ -47,3 +47,19 @@ html, body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+/* Optional: show a thin scrollbar track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Optional: style the scrollbar handle */
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}

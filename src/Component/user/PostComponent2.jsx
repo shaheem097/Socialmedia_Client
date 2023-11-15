@@ -4,47 +4,58 @@ import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPost,PostOwnerDetails,likeLoading } from '../../Redux/Reducers/postReducer';
 import moment from 'moment';
+import { motion } from 'framer-motion';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import CommentModal from './CommentModal';
-import { motion, AnimatePresence } from 'framer-motion';
 
 function PostComponent() {
   
     const dispatch = useDispatch();
     const [posts, setPosts] = useState([]);
     const [usersData, setUsersData] = useState({});
+    const [commentInputs, setCommentInputs] = useState({});
     const [userLikedPosts, setUserLikedPosts] = useState({});
-    const [isCommentModalOpen, setCommentModalOpen] = useState(false);
-    const [selectedPostId, setSelectedPostId] = useState(null);
-
+    const [commentText, setCommentText] = useState({});
+    
     const userId = useSelector((store) => store.user?.userData?.payload?.userId);
+    const username = useSelector((store) => store.user?.userData?.payload?.username);
   
-    const truncateText = (text, maxLines = 2) => {
-      const lines = text.split('\n');
-      if (lines.length <= maxLines) {
-        return text;
+    
+    const handleCommentClick = (postId) => {
+      setCommentInputs((prevInputs) => ({
+        ...prevInputs,
+        [postId]: !prevInputs[postId],
+      }));
+    };
+
+    const handleCommentChange = (postId, event) => {
+      setCommentText((prevText) => ({
+        ...prevText,
+        [postId]: event.target.value,
+      }));
+    };
+
+    const addComment = async (postId) => {
+      try {
+       console.log("commented");
+       const data=await axios.put(`/:${postId}/comment`,{
+        userId,
+        comment:commentText[postId],
+        username,
+       })
+       console.log(data,"commentd");
+       setCommentText((prevText) => ({
+        ...prevText,
+        [postId]: "",
+        
+      }));
+      } catch (error) {
+        console.error('Error adding comment:', error);
       }
-  
-      const truncatedText = lines.slice(0, maxLines).join('\n');
-      return truncatedText + '...';
     };
   
-    const handleCommentClick = (postId) => {
-      console.log('Clicked on post:', postId);
-    setSelectedPostId(postId);
-    setCommentModalOpen(true);
+
+
     
-  };
-
-  const handleCloseCommentModal = () => {
-    console.log('Closing comment modal');
-    setCommentModalOpen(false);
-    setSelectedPostId(null);
-    fetchPosts(); // Update the posts and comments count when the modal is closed
-  };
-  
-
-
     const fetchPosts = async () => {
       try {
         const response = await axios.get(`/getAllPost/${userId}`);
@@ -159,17 +170,12 @@ const getRelativeTime = (createdAt) => {
 
   return (
    
-    <div className="post-container" style={{ position: 'relative' }}>
-
+    <div>
          {posts.map((post) => (
           <motion.div
           key={post.id}
-          whileHover={{ scale: 1.01, zIndex: 1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-          style={{
-            position: 'relative',
-             // or 'block'
-          }}
+          whileHover={{ scale: 1.01, zIndex: 1 }} // Add the scale and zIndex animations on hover
+          transition={{ type: 'spring', stiffness: 300 }} // Add a spring transition for a smooth effect
         >
     <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ backgroundColor: '#37474F', color: '#ECEFF1', borderRadius: '16px', overflow: 'hidden' , border: '3px solid #083344' }}>
@@ -196,7 +202,10 @@ const getRelativeTime = (createdAt) => {
         />
         <img src={post.post} alt="" style={{ width: '320px', height: '340px' }} />
         <CardContent className="bg-[#030712]">
-       
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* ... */}
+          </div>
+  
           <div style={{ display: 'flex', alignItems: 'center', paddingBottom:'10px' }}>
   <div style={{ position: 'relative' }}>
   <img
@@ -214,7 +223,7 @@ const getRelativeTime = (createdAt) => {
   style={{ height: '25px', width: '25px' }}
 />
    {post.likes.length > 0 && (
-      <div style={{ position: 'absolute', bottom: '-16px', left: '60%', transform: 'translateX(-50%)', textAlign: 'center', fontSize: '11px', color: 'white', display:'flex'}}>
+      <div style={{ position: 'absolute', bottom: '-16px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center', fontSize: '11px', color: 'white', display:'flex'}}>
       <div> {post.likes.length}</div> <div style={{marginLeft:'2px'}}>{post.likes.length === 1 ? ' like' : ' likes'}</div> 
       </div>
     )}
@@ -222,53 +231,55 @@ const getRelativeTime = (createdAt) => {
 
   <img
     onClick={() => handleCommentClick(post._id)}
-    
     src="/assets/comment.png"
     alt=""
     style={{ height: '20px', width: '20px', marginLeft: '4px' }}
   />
 </div>
 
-<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', wordWrap: 'break-word', maxWidth: '270px',paddingTop:'10px' }}>
-  <div>
-    <strong>{usersData[post.userId]?.username}</strong> {post.description}
+                  <div > 
+                  {commentInputs[post._id] && (
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <Input
+      placeholder="Add a comment..."
+      value={commentText[post._id] || ''}
+      onChange={(event) => handleCommentChange(post._id, event)}
+      style={{
+        width: '80%',
+        padding: '0.25rem 0',
+        backgroundColor: 'transparent',
+        border: 'none',
+        borderRadius: '4px',
+        fontSize: '14px',
+        color: '#ECEFF1',
+      }}
+    />
+    {commentText[post._id]?.trim().length > 0 && ( // Check if there is at least one non-space character
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => addComment(post._id)}
+        style={{
+          marginLeft: '0.5rem',
+          padding: '0.2rem 0.5rem', 
+          backgroundColor: 'transparent',
+          border: '1px solid #1976D2', 
+          color: '#1976D2', 
+        }}
+      >
+        Add
+      </Button>
+    )}
   </div>
-</div>
+)}
 
-{post.comments.length > 0 && (
-<div  onClick={() => handleCommentClick(post._id)}
- style={{paddingTop:'10px',fontSize:'13px'}}><p>View {post?.comments?.length} comments</p></div>
- )}
-
-        
-                  
+                </div>
         </CardContent>
       </div>
     </div>
-
-    <AnimatePresence>
-  {isCommentModalOpen && selectedPostId === post._id && (
-    <motion.div
-      initial={{ opacity: 0, height: 0, top: '100%' }}
-      animate={{ opacity: 1, height: '100%', top: 0 }}
-      exit={{ opacity: 0, height: 0, top: '100%' }}  // Set the exit top value to 0
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      style={{ position: 'absolute', width: '100%', overflow: 'hidden' }}
-    >
-      <CommentModal
-        isOpen={isCommentModalOpen}
-        onClose={handleCloseCommentModal}
-        postId={selectedPostId}
-        comments={post.comments}
-        postOwner={post.userId}
-      />
     </motion.div>
-  )}
-</AnimatePresence>
-    </motion.div>
-    
           ))}
-          
   </div>
   
       
