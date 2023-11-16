@@ -10,18 +10,36 @@ console.log(postOwner,'iddddssssdddaaaaaaaaaaaaaadddd');
 const [isFollowing, setIsFollowing] = useState(false);
 
 const userId = useSelector((store) => store.user?.userData?.payload?.userId);
+const friendId=postOwner._id
 
 const handleToggleFollow = async () => {
     try {
       // Perform the follow or unfollow action based on the current state
       if (isFollowing) {
         console.log("unfollow");
-        // Unfollow
-        // await axios.put(`/unfollow/${postOwner._id}`);
+        try {
+            
+            await axios.put(`/${userId}/unfollow`, { id: friendId }).then((res) => {
+              console.log(res?.data,"unfollowww");
+             
+            });
+          } catch (error) {
+            console.error("Error unfollowing user:", error);
+            
+          }
       } else {
         console.log('follow');
-        // Follow
-        // await axios.put(`/follow/${postOwner._id}`);
+        try {
+            
+            await axios.put(`/${userId}/follow`, { id: friendId }).then((res) => {
+      
+             console.log(res.data?.details,"folollowwwwwers");
+              
+            });
+          } catch (error) {
+            console.error("Error following user:", error);
+            
+          }
       }
 
       // Toggle the follow state
