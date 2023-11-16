@@ -4,7 +4,7 @@ import UserHome from '../../Component/user/UserHome';
 import Message from '../../Component/user/Message';
 import Create from '../../Component/user/Create2';
 import Profile from '../../Component/user/Profile';
-import { motion } from 'framer-motion';
+
 
 
 function Home() {

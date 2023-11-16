@@ -3,6 +3,8 @@ import EditProfile from './EditProfile';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import axios from "../../Axios/axios";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ReactPlayer from 'react-player';
 
 function Profile() {
 
@@ -94,29 +96,52 @@ const fetchUser=async()=>{
 
     <div className="p-4 sm:p-8 relative bg-[#030712] mt-1 rounded-lg" style={{ border: '3px solid #083344' }}>
       <div className="p-4 sm:p-1">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* Sample Post 1 */}
-          {posts.length > 0 ? (
-                  posts.map((post, index) => (
-                    <div key={index} className="rounded-lg">
-                      <img
-                        src={post.post[0]} // Use the first image in the post array or a default image
-                        alt={`Post ${index}`}
-                        className="rounded-lg object-cover"
-                        style={{ width: '300px', height: '300px' }}
-                      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {posts.map((post, index) => (
+                    <div key={index} className="relative rounded-lg overflow-hidden">
+                      <div className='bg-gray-900'
+                        style={{
+                          width: '100%',
+                          height: '300px',
+                          position: 'relative',
+                        }}
+                      >
+                        {post.post[0].includes('video') ? (
+                          <>
+                           <div style={{
+                            position: 'absolute',
+                            bottom: '10px',
+                            right: '10px',
+                            width: '20px',
+                            height: '20px',
+                          }}>
+                          <img
+                            src="/assets/play.png" // Play button image
+                            alt="Play"
+                            
+                          />
+                        </div>
+                        
+                          <ReactPlayer
+                            url={post.post[0]} // Video URL
+                            width="100%"
+                            height="100%"
+                           
+                          />
+                          </>
+                        ) : (
+                          // If post is an image
+                          <img
+                            src={post.post[0]} // Use the first image in the post array or a default image
+                            alt={`Post ${index}`}
+                            className="rounded-lg object-cover"
+                            style={{ width: '100%', height: '100%' }}
+                          />
+                        )}
+                      </div>
                     </div>
-                  ))
-                ) : (
-                  // If there are no posts, set a minimum height for the post section
-                  <div
-                    style={{ minHeight: '200px',minWidth: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                  >
-                 
-                  </div>
-                )}
-         
-        </div>
+                  ))}
+                </div>
       </div>
     </div>
   </div>

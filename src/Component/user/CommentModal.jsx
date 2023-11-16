@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
 import { Input, Button } from '@mui/material';
+import { setUpdatedPost } from '../../Redux/Reducers/postReducer';
+
 
 function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
   const [commentText, setCommentText] = useState("");
@@ -11,6 +13,8 @@ function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
   const username = useSelector((store) => store.user?.userData?.payload?.username);
   const dp=useSelector((store) => store.user?.userData?.payload?.dp)
  
+  const dispatch=useDispatch()
+
   useEffect(() => {
     if (isOpen) {
       setVisibleComments(comments);
@@ -29,6 +33,7 @@ function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
         username,
         dp
       });
+      dispatch(setUpdatedPost({ post: data.data }));
       const newComment = {
         userId,
         comment: commentText,
@@ -48,7 +53,7 @@ function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
         userId: userId,
         index: comments.indexOf(comment),
       });
-  
+     
       // Update the local state to remove the deleted comment
       setVisibleComments((prevComments) => prevComments.filter((c) => c._id !== comment._id));
 

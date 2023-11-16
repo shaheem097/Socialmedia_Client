@@ -6,7 +6,6 @@ import { useState, useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard.jsx';
-import ProfilePage from "./pages/user/ProfilePage";
 
 
 function App() {
@@ -33,7 +32,6 @@ function App() {
         <Route path="/signup" element={!userjwtToken ? <Signup /> : <Navigate to="/" />} />
         <Route path="/admin/login" element={!adminJwtToken? <AdminLogin/>:  <Navigate to="/admin" />} />
         <Route path="/admin" element={ adminJwtToken ?<Dashboard/> :<Navigate to="/admin/login" />} />
-        <Route path="/profile/:userId" element={ userjwtToken ?<ProfilePage/> :<Navigate to="/login" />} />
 
             {/* <Route path="/" element= {<Home />}/>
             <Route path="/login" element= {<Login />}/>

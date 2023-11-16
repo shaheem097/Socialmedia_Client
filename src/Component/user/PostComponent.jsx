@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect,useRef,useState } from 'react';
 import { CardContent, CardHeader, IconButton, Avatar, Typography, Input,Button } from '@mui/material';
 import axios from '../../Axios/axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import moment from 'moment';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CommentModal from './CommentModal';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import VideoPlayer from './VideoPlayer';
 function PostComponent() {
   
     const dispatch = useDispatch();
@@ -16,19 +16,12 @@ function PostComponent() {
     const [userLikedPosts, setUserLikedPosts] = useState({});
     const [isCommentModalOpen, setCommentModalOpen] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState(null);
-
+   
     const userId = useSelector((store) => store.user?.userData?.payload?.userId);
   
-    const truncateText = (text, maxLines = 2) => {
-      const lines = text.split('\n');
-      if (lines.length <= maxLines) {
-        return text;
-      }
-  
-      const truncatedText = lines.slice(0, maxLines).join('\n');
-      return truncatedText + '...';
-    };
-  
+
+ 
+ 
     const handleCommentClick = (postId) => {
       console.log('Clicked on post:', postId);
     setSelectedPostId(postId);
@@ -43,8 +36,6 @@ function PostComponent() {
     fetchPosts(); // Update the posts and comments count when the modal is closed
   };
   
-
-
     const fetchPosts = async () => {
       try {
         const response = await axios.get(`/getAllPost/${userId}`);
@@ -161,7 +152,37 @@ const getRelativeTime = (createdAt) => {
    
     <div className="post-container" style={{ position: 'relative' }}>
 
-         {posts.map((post) => (
+{posts.length === 0 ? (
+        <>
+          <h6
+            style={{
+              variant: 'body2',
+              textAlign: 'center',
+              marginTop: '200px',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '36px',
+
+            }}
+          >
+            No posts to show
+          </h6>
+          <h6
+            style={{
+              variant: 'body2',
+              textAlign: 'center',
+              marginTop: '10px',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '36px',
+
+            }}
+          >
+            Follow some friends to see their posts
+          </h6>
+        </>
+      ) : (
+        posts.map((post) => (
           <motion.div
           key={post.id}
           whileHover={{ scale: 1.01, zIndex: 1 }}
@@ -194,7 +215,13 @@ const getRelativeTime = (createdAt) => {
             </>
           }
         />
-        <img src={post.post} alt="" style={{ width: '320px', height: '340px' }} />
+   {post.post[0].includes('video') ? (
+                  // If post is a video
+                  <VideoPlayer url={post.post[0]} />
+                ) : (
+                  // If post is an image
+                  <img src={post.post[0]} alt="" style={{ width: '320px', height: '340px' }}  />
+                )}
         <CardContent className="bg-[#030712]">
        
           <div style={{ display: 'flex', alignItems: 'center', paddingBottom:'10px' }}>
@@ -267,7 +294,8 @@ const getRelativeTime = (createdAt) => {
 </AnimatePresence>
     </motion.div>
     
-          ))}
+        ))
+          )}
           
   </div>
   

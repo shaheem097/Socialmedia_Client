@@ -75,6 +75,8 @@ function UserHome() {
             sm={12}
             md={4}
             style={{
+              position: "fixed",
+              right:'30px',
               marginTop: "40px",
               display: "flex",
               justifyContent: "center",
