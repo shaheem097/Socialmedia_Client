@@ -9,19 +9,25 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 const VideoPlayer = ({ url }) => {
   const videoRef = useRef(null);
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
 
   const handlePlayPauseClick = () => {
+
     setIsPlaying(!isPlaying);
+
   };
 
   const handleVideoClick = () => {
+   
     handlePlayPauseClick();
   };
 
   const handleMuteClick = () => {
+    
     setIsMuted(!isMuted);
+    console.log(isMuted,'mouteddd');
   };
 
   return (
@@ -37,6 +43,7 @@ const VideoPlayer = ({ url }) => {
         onClick={handleVideoClick}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        
       />
       {!isPlaying && (
         <div
@@ -58,6 +65,27 @@ const VideoPlayer = ({ url }) => {
           </IconButton>
         </div>
       )}
+
+    {isPlaying && (
+            <div
+            style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            
+            }}
+            onClick={handlePlayPauseClick}
+            >
+            <IconButton style={{ color: 'white' }} onClick={handlePlayPauseClick}>
+                {isPlaying ? '': <PlayArrowIcon />}
+            </IconButton>
+            </div>
+        )}
       <IconButton
         style={{
           position: 'absolute',

@@ -69,7 +69,7 @@ function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
     <div>
          <div style={{ display: isOpen ? 'block' : 'none', bottom: 0, left: 0, width: '100%', height: '100%', zIndex: 999, overflowY: 'auto', }}>
         <div className="bg-[#030712]" style={{ width: '320px', position: 'absolute', bottom: '-5%', left: '50%', transform: 'translate(-50%, -50%)', padding: '20px', borderRadius: '8px', overflowY: 'auto', maxHeight: '300px', }}>
-          {/* Down Arrow Close Button */}
+
           <div 
             style={{ paddingBottom:'30px'}}
             onClick={onClose}
@@ -86,14 +86,12 @@ function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
           >
           {visibleComments.slice().reverse().map((comment, index) => (
   <div key={index} style={{ marginBottom: '10px', fontSize: '13px', color: '#ECEFF1', alignItems: 'center', position: 'relative' }}>
-    {/* Display picture and username in a row */}
     <div style={{ display: 'flex' }}>
       <img src={comment.dp} alt="user dp" style={{ width: '20px', height: '20px', borderRadius: '50%', marginRight: '5px' }} />
       <strong style={{ marginRight: '5px' }}>{comment.username}</strong>
     </div>
-    {/* Comment text below the dp and username */}
+    
     <div style={{ marginLeft: '25px', wordWrap: 'break-word' }}>{comment.comment}</div>
-    {/* Delete button */}
     {(postOwner === userId || comment.userId === userId) && (
                 <img
                   src='/assets/trash1.png'
