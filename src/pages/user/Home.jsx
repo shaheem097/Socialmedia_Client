@@ -2,7 +2,7 @@ import React,{useState} from 'react';
 import UserSidebar from '../../Component/user/UserSidebar'
 import UserHome from '../../Component/user/UserHome';
 import Message from '../../Component/user/Message';
-import Create from '../../Component/user/Create2';
+import Create from '../../Component/user/Create';
 import Profile from '../../Component/user/Profile';
 
 

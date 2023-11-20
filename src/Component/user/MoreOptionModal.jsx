@@ -3,14 +3,20 @@ import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
 import { toggleFollow } from '../../Redux/Reducers/followReducer';
+import { toast } from "react-toastify";
 
 const MoreOptionsModal = React.memo(({ isOpen, onClose,postId,description, postOwner,onPostUpdate }) => {
 
 
 const [isFollowing, setIsFollowing] = useState(false);
-const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+const [activeModal, setActiveModal] = useState(false);
 const [isEditing, setIsEditing] = useState(false);
 const [editedContent, setEditedContent] = useState('');
+const [isReporting, setIsReporting] = useState(false);
+const [reportContent, setReportContent] = useState('');
+const [reportConfirmation, setReportConfirmation] = useState(false);
+const [deleteConfirmation, setDeleteConfirmation] = useState(false);
 
 const userId = useSelector((store) => store.user?.userData?.payload?.userId);
 const friendId=postOwner._id
@@ -84,7 +90,9 @@ const handleToggleFollow = async () => {
 
   const handleDeletePost = async () => {
     // Display confirmation dialog
-    setShowDeleteConfirmation(true);
+    // setShowDeleteConfirmation(true); 
+    setActiveModal(true); 
+    setDeleteConfirmation(true)
   };
 
   const handleConfirmDelete = async () => {
@@ -94,7 +102,9 @@ const handleToggleFollow = async () => {
       const response=await axios.delete(`/${postId}/deletepost`)
       console.log(response);
       onPostUpdate()
-      setShowDeleteConfirmation(false);
+      // setShowDeleteConfirmation(false);
+      setDeleteConfirmation(false)
+      setActiveModal(false);
       onClose();
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -102,13 +112,52 @@ const handleToggleFollow = async () => {
   };
 
   const handleCancelDelete = () => {
-    // Close the confirmation dialog
-    setShowDeleteConfirmation(false);
+   
+    setDeleteConfirmation(false)
+    setActiveModal(false);
   };
 useEffect(() => {
     // Check if the current user is in the followers array
     setIsFollowing(postOwner?.followers?.includes(userId));
   }, [postOwner, userId]);
+
+
+  const handleReportPost = () => {
+
+    setReportContent('');
+    
+    setIsReporting(true)
+
+  };
+
+  const handleCancelReport = () => {
+
+  setReportConfirmation(false)
+    setActiveModal(false);
+    setIsReporting(false)
+  };
+
+  const handleReportConfirmation=async()=>{
+    setActiveModal(true)
+    setReportConfirmation(true)
+
+  }
+
+  const ReportConfirmed = async () => {
+    const response=await axios.put(`/${postId}/report-post`,{
+      userId,
+      reason:reportContent
+    })
+    if(response?.data!==false){
+      toast.error("Reported !!");
+    }
+    setIsReporting(false)
+    setReportConfirmation(false)
+    setActiveModal(false);
+    onPostUpdate()
+    onClose();
+    
+  };
 
   const modalStyle = {
     display: isOpen ? 'block' : 'none',
@@ -156,23 +205,48 @@ useEffect(() => {
 
   return (
     <div style={{ width: '100%' }}>
-      <div style={backdropStyle}  onClick={() => { onClose(); setShowDeleteConfirmation(false);setIsEditing(false); }}></div>
+      <div style={backdropStyle}  onClick={() => { onClose(); setActiveModal(false);setIsEditing(false);setIsReporting(false) }}></div>
       
-      {showDeleteConfirmation ? (
-        // Render the Delete Confirmation Modal on top
+      {activeModal ? (
+        <>
         <div style={modalStyle}>
           <div style={{ ...dialogStyle,  textAlign: 'center' }}>
-            <h3 style={{ color: '#ff6161' }}>Delete Post</h3>
-            <p>Are you sure you want to delete this post?</p>
+            <h3 style={{ color: '#ff6161' }}>{deleteConfirmation ?"Delete Post":"Report Post"}</h3>
+            <p>{deleteConfirmation?"Are you sure you want to delete this post?":"Are you sure you want to Report this post?"}</p>
             <div style={{paddingTop:'20px'}}>
-            <button onClick={handleCancelDelete}>Cancel</button>
-            <button onClick={handleConfirmDelete} style={{ color: '#ff6161',marginLeft:'20px' }}>
-              Confirm
-            </button>
+            {deleteConfirmation ? (
+            // If deleteConfirmation is true, render delete confirmation buttons
+            <>
+              <button onClick={handleCancelDelete}>Cancel</button>
+              <button
+                onClick={handleConfirmDelete}
+                style={{ color: '#ff6161', marginLeft: '20px' }}
+              >
+                Confirm
+              </button>
+            </>
+          ) : (
+            // If deleteConfirmation is false, render report confirmation buttons
+            <>
+              <button onClick={handleCancelReport}>Cancel</button>
+              <button
+                onClick={ReportConfirmed}
+                style={{ color: '#ff6161', marginLeft: '20px' }}
+              >
+                Confirm
+              </button>
+            </>
+          )}
             </div>
           </div>
         </div>
-      ) : (
+
+        </>
+      ) :
+      
+      
+      
+       (
       <div style={modalStyle}>
         <div>
             <div style={{ position: 'absolute',top:'3px',right:'3px'}}>
@@ -186,6 +260,28 @@ useEffect(() => {
           <div style={{ width: '100%' }}>
           {postOwner?._id !== userId && (
              <>
+
+              {isReporting ? (
+                   <div style={modalStyle}>
+                   <div style={{ ...dialogStyle,  textAlign: 'center' }}>
+                     <h3 style={{ color: '#ff6161' }}>Report Post</h3>
+                     <div style={{paddingTop:'30px'}}>
+                     <input
+                          type="text"
+                          onChange={(e) => setReportContent(e.target.value)}
+                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-white"
+
+                        />
+                        <div style={{paddingTop:'15px'}}>
+                    <button onClick={handleCancelReport}>Cancel</button>
+                        <button onClick={handleReportConfirmation} style={{ color: '#ff6161', marginLeft: '40px' }}>
+                          Report
+                        </button>
+                        </div>
+                     </div>
+                   </div>
+                 </div>
+                  ) : null}
           <button
               style={buttonStyle}
               onMouseEnter={(e) => (e.currentTarget.style.color = hoverColor)}
@@ -200,7 +296,10 @@ useEffect(() => {
               </button>
             <hr style={{ border: '1px solid #155e75', margin: '8px 0', width: '100%' }} />
             
-            <button style={buttonStyle}>Report</button>
+            <button style={buttonStyle} onClick={handleReportPost}>
+              Report
+            </button>
+
             <hr style={{ border: '1px solid #155e75', margin: '8px 0', width: '100%' }} />
                 </>
             )}
