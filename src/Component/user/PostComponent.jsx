@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CardContent,
   CardHeader,
   IconButton,
   Avatar,
-  Typography,
-  Input,
-  Button,
+
 } from "@mui/material";
 import axios from "../../Axios/axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,11 +16,33 @@ import {
 import moment from "moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CommentModal from "./CommentModal";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence,useAnimation } from "framer-motion";
 import VideoPlayer from "./VideoPlayer";
 import MoreOptionsModal from "./MoreOptionModal";
 
 function PostComponent() {
+
+  const controls = useAnimation();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
+    const triggerThreshold = 100;
+
+    if (scrollY > triggerThreshold) {
+      controls.start({ opacity: 1, y: 0 });
+    } else {
+      controls.start({ opacity: 0, y: 100 });
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
+
   const dispatch = useDispatch();
   const [posts, setPosts] = useState([]);
   const [usersData, setUsersData] = useState({});
@@ -30,13 +50,19 @@ function PostComponent() {
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [openedModals, setOpenedModals] = useState({});
-
   const userId = useSelector((store) => store.user?.userData?.payload?.userId);
 
   const handleOpenModal = (postId) => {
     setOpenedModals((prev) => ({ ...prev, [postId]: true }));
   };
 
+  
+
+  const handleMoremodal = () => {
+    // Callback function to handle post deletion complete
+    
+    fetchPosts(); // Fetch posts after deletion
+  };
   const handleCloseModal = (postId) => {
     setOpenedModals((prev) => ({ ...prev, [postId]: false }));
   };
@@ -163,6 +189,8 @@ function PostComponent() {
   };
 
   return (
+
+
     <div className="post-container" style={{ position: "relative" }}>
       {posts.length === 0 ? (
         <>
@@ -194,14 +222,14 @@ function PostComponent() {
       ) : (
         posts.map((post) => (
           <motion.div
-            key={post.id}
-            whileHover={{ scale: 1.01, zIndex: 1 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            style={{
-              position: "relative",
-              // or 'block'
-            }}
-          >
+          key={post.id}
+          whileHover={{ scale: 1.01, zIndex: 1 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          style={{
+            position: "relative",
+            // or 'block'
+          }}
+        >
             <div
               style={{
                 padding: "1.5rem",
@@ -250,7 +278,10 @@ function PostComponent() {
                       <MoreOptionsModal
                         isOpen={openedModals[post._id] || false}
                         onClose={() => handleCloseModal(post._id)}
+                        postId={post._id}
+                        description={post.description}
                         postOwner={usersData[post.userId]}
+                        onDeleteComplete={handleMoremodal}
                       />
                     </>
                   }

@@ -2,15 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
+import { toggleFollow } from '../../Redux/Reducers/followReducer';
 
-const MoreOptionsModal = React.memo(({ isOpen, onClose, postOwner }) => {
+const MoreOptionsModal = React.memo(({ isOpen, onClose,postId, postOwner,onDeleteComplete  }) => {
 
-console.log(postOwner,'iddddssssdddaaaaaaaaaaaaaadddd');
 
 const [isFollowing, setIsFollowing] = useState(false);
+const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
 const userId = useSelector((store) => store.user?.userData?.payload?.userId);
 const friendId=postOwner._id
+
+
+
+const dispatch=useDispatch()
 
 const handleToggleFollow = async () => {
     try {
@@ -40,15 +45,40 @@ const handleToggleFollow = async () => {
             console.error("Error following user:", error);
             
           }
+          
       }
 
       // Toggle the follow state
       setIsFollowing((prevIsFollowing) => !prevIsFollowing);
-    } catch (error) {
+      dispatch(toggleFollow({ userId: postOwner._id }));    } catch (error) {
       console.error('Error toggling follow:', error);
     }
   };
 
+
+  const handleDeletePost = async () => {
+    // Display confirmation dialog
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      // Perform delete operation
+     
+      const response=await axios.delete(`/${postId}/deletepost`)
+      console.log(response);
+      onDeleteComplete()
+      setShowDeleteConfirmation(false);
+      onClose();
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    // Close the confirmation dialog
+    setShowDeleteConfirmation(false);
+  };
 useEffect(() => {
     // Check if the current user is in the followers array
     setIsFollowing(postOwner?.followers?.includes(userId));
@@ -67,8 +97,16 @@ useEffect(() => {
     borderRadius: '10px', // Set the border radius for curvature
     border: '2px solid #155e75',
     textAlign:'center',
-    width:'200px'
+    width:'280px'
   };
+  const dialogStyle = {
+    background: '#030712',
+    padding: '20px',
+    color: 'white',
+   
+    textAlign: 'center',
+  };
+
   const backdropStyle = {
     position: 'absolute',
     top: 0,
@@ -88,9 +126,27 @@ useEffect(() => {
 
   const hoverColor = '#f0f0f0';
 
+
+
   return (
     <div style={{ width: '100%' }}>
-      <div style={backdropStyle} onClick={onClose}></div>
+      <div style={backdropStyle}  onClick={() => { onClose(); setShowDeleteConfirmation(false); }}></div>
+      
+      {showDeleteConfirmation ? (
+        // Render the Delete Confirmation Modal on top
+        <div style={modalStyle}>
+          <div style={{ ...dialogStyle,  textAlign: 'center' }}>
+            <h3 style={{ color: '#ff6161' }}>Delete Post</h3>
+            <p>Are you sure you want to delete this post?</p>
+            <div style={{paddingTop:'20px'}}>
+            <button onClick={handleCancelDelete}>Cancel</button>
+            <button onClick={handleConfirmDelete} style={{ color: '#ff6161',marginLeft:'20px' }}>
+              Confirm
+            </button>
+            </div>
+          </div>
+        </div>
+      ) : (
       <div style={modalStyle}>
         <div>
             <div style={{ position: 'absolute',top:'3px',right:'3px'}}>
@@ -122,18 +178,26 @@ useEffect(() => {
             <hr style={{ border: '1px solid #155e75', margin: '8px 0', width: '100%' }} />
                 </>
             )}
+
+            
             <div>
+          
+              
             {postOwner && postOwner._id === userId && (
                 <>
                   <button style={buttonStyle}>Edit</button>
                   <hr style={{ border: '1px solid #155e75', margin: '8px 0', width: '100%' }} />
-                  <button style={buttonStyle}>Delete</button>
+                  <button 
+                  onClick={handleDeletePost}
+                  style={buttonStyle}>Delete</button>
                 </>
               )}
             </div>
           </div>
         </div>
+        
       </div>
+      )}
     </div>
   );
 });

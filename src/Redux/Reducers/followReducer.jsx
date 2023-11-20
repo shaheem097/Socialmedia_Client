@@ -8,6 +8,7 @@ const initialState = {
   friendFollowing: [],
   friendFollowers: [],
   loading: false,
+  userFollowState: [],
 };
 
 const followSlice = createSlice({
@@ -15,7 +16,18 @@ const followSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
+      const userId = action.payload?.userData?.payload?.userId;
+
+      // Initialize userFollowState if not present
+      if (!state.userFollowState[userId]) {
+        state.userFollowState[userId] = false;
+      }
+
       state.user = action.payload;
+    },
+    toggleFollow: (state, action) => {
+      const { userId } = action.payload;
+      state.userFollowState[userId] = !state.userFollowState[userId];
     },
     setFollowers: (state, action) => {
       if (state.user) {
@@ -55,5 +67,6 @@ export const {
   setFriendFollowing,
   setFollowing,
   clearUserLogout,
+  toggleFollow
 } = followSlice.actions;
 export default followSlice.reducer;

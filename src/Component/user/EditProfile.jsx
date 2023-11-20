@@ -241,7 +241,7 @@ function EditProfile({ onClose }) {
                 <label htmlFor="imageInput" className="rounded-full">
                   <img className="" src="/assets/editprofile.png" alt="" />
                 </label>
-                <input
+                  <input
                   id="imageInput"
                   type="file"
                   accept="image/*"
