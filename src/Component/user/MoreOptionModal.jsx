@@ -4,11 +4,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
 import { toggleFollow } from '../../Redux/Reducers/followReducer';
 
-const MoreOptionsModal = React.memo(({ isOpen, onClose,postId, postOwner,onDeleteComplete  }) => {
+const MoreOptionsModal = React.memo(({ isOpen, onClose,postId,description, postOwner,onPostUpdate }) => {
 
 
 const [isFollowing, setIsFollowing] = useState(false);
 const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+const [isEditing, setIsEditing] = useState(false);
+const [editedContent, setEditedContent] = useState('');
 
 const userId = useSelector((store) => store.user?.userData?.payload?.userId);
 const friendId=postOwner._id
@@ -16,6 +18,30 @@ const friendId=postOwner._id
 
 
 const dispatch=useDispatch()
+
+
+const handleEditPost = () => {
+  setEditedContent(description || '');
+  setIsEditing(true);
+};
+
+const handleCancelEdit = () => {
+  setIsEditing(false);
+};
+
+const handleSaveEdit = async () => {
+ console.log("clicked save button");
+  const updatedPost={
+    text:editedContent
+  }
+  const response=await axios.post(`/${postId}/editPost`,updatedPost)
+  console.log(response);
+  onPostUpdate()
+  setIsEditing(false);
+  onClose();
+};
+
+
 
 const handleToggleFollow = async () => {
     try {
@@ -67,7 +93,7 @@ const handleToggleFollow = async () => {
      
       const response=await axios.delete(`/${postId}/deletepost`)
       console.log(response);
-      onDeleteComplete()
+      onPostUpdate()
       setShowDeleteConfirmation(false);
       onClose();
     } catch (error) {
@@ -130,7 +156,7 @@ useEffect(() => {
 
   return (
     <div style={{ width: '100%' }}>
-      <div style={backdropStyle}  onClick={() => { onClose(); setShowDeleteConfirmation(false); }}></div>
+      <div style={backdropStyle}  onClick={() => { onClose(); setShowDeleteConfirmation(false);setIsEditing(false); }}></div>
       
       {showDeleteConfirmation ? (
         // Render the Delete Confirmation Modal on top
@@ -185,7 +211,31 @@ useEffect(() => {
               
             {postOwner && postOwner._id === userId && (
                 <>
-                  <button style={buttonStyle}>Edit</button>
+                {isEditing ? (
+                   <div style={modalStyle}>
+                   <div style={{ ...dialogStyle,  textAlign: 'center' }}>
+                     <h3 style={{ color: '#ff6161' }}>Edit Post Description</h3>
+                     <div style={{paddingTop:'30px'}}>
+                     <input
+                          type="text"
+                          value={editedContent}
+                          onChange={(e) => setEditedContent(e.target.value)}
+                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-white"
+
+                        />
+                        <div style={{paddingTop:'15px'}}>
+                    <button onClick={handleCancelEdit}>Cancel</button>
+                        <button onClick={handleSaveEdit} style={{ color: '#ff6161', marginLeft: '40px' }}>
+                          Save
+                        </button>
+                        </div>
+                     </div>
+                   </div>
+                 </div>
+                  ) : null}
+                   <button style={buttonStyle} onClick={handleEditPost}>
+                    Edit
+                  </button>
                   <hr style={{ border: '1px solid #155e75', margin: '8px 0', width: '100%' }} />
                   <button 
                   onClick={handleDeletePost}

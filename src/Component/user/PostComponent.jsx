@@ -281,7 +281,7 @@ function PostComponent() {
                         postId={post._id}
                         description={post.description}
                         postOwner={usersData[post.userId]}
-                        onDeleteComplete={handleMoremodal}
+                        onPostUpdate={handleMoremodal}
                       />
                     </>
                   }
