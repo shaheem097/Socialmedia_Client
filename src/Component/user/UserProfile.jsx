@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import axios from "../../Axios/axios";
 import ReactPlayer from 'react-player';
-
+import {useSelector } from 'react-redux';
 function UserProfile({userId}) {
-  console.log(userId,"idddddddddddddddddddddddddd");
+
   const [isFollowing, setIsFollowing] = useState(false);
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
- 
+
+  const currentUserId = useSelector((store) => store.user?.userData?.payload?.userId);
   useEffect(() => {
     fetchUser();
     getUserPosts();
   }, []);
 
   const fetchUser = async () => {
-    await axios.get(`/${userId}/user`).then((response) => {
+    try {
+      const response = await axios.get(`/${userId}/user`);
       setUser(response.data);
-    });
+
+      // Check if the current user is in the followers array to determine follow status
+      const currentUserFollows = response.data.followers.includes(currentUserId); // Replace 'currentUser.id' with the actual property that represents the user id
+      setIsFollowing(currentUserFollows);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
   };
 
   const getUserPosts = async () => {
@@ -26,10 +34,40 @@ function UserProfile({userId}) {
     });
   };
 
-  const handleFollowToggle = () => {
-    // TODO: Add logic to send a request to your server to follow/unfollow the user
-    setIsFollowing((prevIsFollowing) => !prevIsFollowing);
+  const handleToggleFollow = async () => {
+    
+    try {
+      const friendId = userId; // Replace 'user.id' with the actual property that represents the user id
+        console.log(user._id,"friiiiiinddddddddddwwwwwwwwdid");
+        console.log(friendId,"friiiiiindid");
+      if (isFollowing) {
+        // Unfollow logic
+        console.log("folloowwwwwwww");
+        try {
+          await axios.put(`/${currentUserId}/unfollow`, { id: friendId });
+          console.log('Unfollow successful');
+        } catch (error) {
+          console.error('Error unfollowing user:', error);
+        }
+      } else {
+        console.log("unfollowwwwwwwwwww");
+        // Follow logic
+        try {
+          await axios.put(`/${currentUserId}/follow`, { id: friendId });
+          console.log('Follow successful');
+        } catch (error) {
+          console.error('Error following user:', error);
+        }
+      }
+
+      // Toggle the follow state
+      setIsFollowing((prevIsFollowing) => !prevIsFollowing);
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+    }
   };
+
+
 
   return (
     <div>
@@ -47,8 +85,8 @@ function UserProfile({userId}) {
               <h1 className="text-lg font-bold">{user?.username}</h1>
               <p className="text-sm">{user?.bio}</p>
               <div className="text-center mt-4" style={{ position: 'relative', top: '-20px' }}>
-                <button className="text-white border mt-2 border-gray-900 rounded-lg text-sm hover:text-blue-500" onClick={handleFollowToggle}>
-                  {isFollowing ? 'Unfollow' : 'Follow'}
+              <button className="text-white border mt-2 border-gray-900 rounded-lg text-sm hover:text-blue-500" onClick={handleToggleFollow}>
+                {isFollowing ? 'Unfollow' : 'Follow'}
                 </button>
               </div>
             </div>
