@@ -194,30 +194,10 @@ function PostComponent() {
     <div className="post-container" style={{ position: "relative" }}>
       {posts.length === 0 ? (
         <>
-          <h6
-            style={{
-              variant: "body2",
-              textAlign: "center",
-              marginTop: "200px",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "36px",
-            }}
-          >
-            No posts to show
-          </h6>
-          <h6
-            style={{
-              variant: "body2",
-              textAlign: "center",
-              marginTop: "10px",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "36px",
-            }}
-          >
-            Follow some friends to see their posts
-          </h6>
+        <img src="/assets/nopost3.png" alt="No Post Image" id="noPostImage" />
+
+         
+        
         </>
       ) : (
         posts.map((post) => (

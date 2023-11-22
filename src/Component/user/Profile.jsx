@@ -96,6 +96,11 @@ const fetchUser=async()=>{
 
     <div className="p-4 sm:p-8 relative bg-[#030712] mt-1 rounded-lg" style={{ border: '3px solid #083344' }}>
       <div className="p-4 sm:p-1">
+      {posts.length === 0 ? (
+                <div className="flex items-center justify-center h-56">
+                 <img src="/assets/nopost3.png" alt="No Post Image" id="noPostImage" />
+                </div>
+              ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {posts.map((post, index) => (
                     <div key={index} className="relative rounded-lg overflow-hidden">
@@ -142,6 +147,7 @@ const fetchUser=async()=>{
                     </div>
                   ))}
                 </div>
+                )}
       </div>
     </div>
   </div>

@@ -61,11 +61,7 @@ const handleUnblock=async(userId)=>{
    <>
   <main>
     <Box sx={{ p: 1 }}>
-      <Box sx={{ textAlign: "center", m: 3 }}>
-        <Typography variant="h5" gutterBottom sx={{ color: "white" }}>
-          View Users
-        </Typography>
-      </Box>
+     
       <TableContainer component={Paper}>
       <Table sx={{ backgroundColor: '#111827', borderSpacing: '1 8px' }}>
 
@@ -87,7 +83,7 @@ const handleUnblock=async(userId)=>{
                     color: "white",
                   }}
                 >
-                  {index + 1}
+                  {startIndex +index + 1}
                 </TableCell>
                 <TableCell sx={{ color: "white" }}>{user?.username}</TableCell>
                 <TableCell sx={{ color: "white" }}>{user?.email}</TableCell>

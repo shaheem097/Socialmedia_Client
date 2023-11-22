@@ -148,15 +148,19 @@ useEffect(() => {
       userId,
       reason:reportContent
     })
-    if(response?.data!==false){
-      toast.error("Reported !!");
-    }
+    if(response?.data===false){
+      toast.error("Already Reported !!");
+
+    }else{
+
+    toast.error("Reported !!");
+  }
     setIsReporting(false)
     setReportConfirmation(false)
     setActiveModal(false);
     onPostUpdate()
     onClose();
-    
+  
   };
 
   const modalStyle = {

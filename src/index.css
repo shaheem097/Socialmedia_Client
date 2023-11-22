@@ -63,3 +63,6 @@ html, body {
   background-color: #888;
   border-radius: 5px;
 }
+#noPostImage {
+  filter: grayscale(100%) brightness(0%) invert(100%);
+}

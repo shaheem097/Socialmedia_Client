@@ -39,7 +39,10 @@ function Sidebar({ setActivePage }) {
 <div class="h-screen w-14 md:w-64 text-white flex flex-col rounded-tl-lg md:rounded-bl-lg md:rounded-tr-lg transition-width duration-300">
   <div class="py-4 px-4">
     <div>
-      
+    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-5xl text-center text-gray-500 font-bold font-serif hidden md:block">
+            Admin Panel
+          </h1>
+
     <div class="hidden md:flex flex-col items-center justify-center mb-4 h-48">
   <div class="text-center">
     <img src='/assets/logo.png' alt="Logo" class="w-18 h-18 md:w-22 md:h-22 mr-2"/>
@@ -53,10 +56,10 @@ function Sidebar({ setActivePage }) {
           >
             <div class="line"></div>
             <img
-          src="/assets/layout.png"
+          src="/assets/layout (1).png"
           alt="Dashboard Icon"
-          class="w-6 h-6 md:w-6 md:h-6 mr-2"
-        />
+          class="w-6 h-6 md:w-6 md:h-6 mr-2 fixed-size-image"
+          />
             <span class="hidden md:inline">Dashboard</span>
           </button>
         </div>
@@ -67,27 +70,15 @@ function Sidebar({ setActivePage }) {
           class="hover:bg-[#083344] p-2 rounded w-full md:flex md:items-center md:justify-start relative"
         >
           <div class="line"></div>
-          <img src="/assets/user.png" alt="Dashboard Icon" class="icon-image mr-2" />
+          <img src="/assets/user.png" alt="Dashboard Icon"
+          class="w-6 h-6 md:w-6 md:h-6 mr-2 fixed-size-image"
+                />
 
           <span class="hidden md:inline">User Management</span>
         </button>
       </div>
   
-        {/* <div class="my-2 border  border-[#155e75] rounded-lg">
-          <button
-            onClick={() => setActivePage('post')}
-            class="hover:bg-[#083344] p-2 rounded w-full md:flex md:items-center md:justify-start relative"
-          >
-            <div class="line"></div>
-            <img
-         src="/assets/management.png"
-          alt="Post Icon"
-          class="w-6 h-6 md:w-6 md:h-6 mr-2"
-        />
-            <span class="hidden md:inline">Post Management</span>
-          </button>
-        </div> */}
-  
+       
         <div class="my-2 border border-[#155e75] rounded-lg">
           <button
             onClick={() => setActivePage('report')}
@@ -97,8 +88,8 @@ function Sidebar({ setActivePage }) {
             <img
          src="/assets/report.png"
           alt="Report Icon"
-          class="w-6 h-6 md:w-6 md:h-6 mr-2"
-        />
+          class="w-6 h-6 md:w-6 md:h-6 mr-2 fixed-size-image"
+          />
             <span class="hidden md:inline">Report Management</span>
           </button>
         </div>
@@ -112,8 +103,8 @@ function Sidebar({ setActivePage }) {
             <img
          src="/assets/exit.png"
           alt="Logout Icon"
-          class="w-6 h-6 md:w-6 md:h-6 mr-2"
-        />
+          class="w-6 h-6 md:w-6 md:h-6 mr-2 fixed-size-image"
+          />
             <span class="hidden md:inline">Logout</span>
           </button>
         </div>
