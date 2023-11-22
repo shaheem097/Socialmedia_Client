@@ -3,7 +3,6 @@ import EditProfile from './EditProfile';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import axios from "../../Axios/axios";
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ReactPlayer from 'react-player';
 
 function Profile() {

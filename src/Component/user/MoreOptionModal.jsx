@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../Axios/axios';
 import { toggleFollow } from '../../Redux/Reducers/followReducer';
 import { toast } from "react-toastify";
+import { Link } from 'react-router-dom';
+import UserProfile from './UserProfile';
 
-const MoreOptionsModal = React.memo(({ isOpen, onClose,postId,description, postOwner,onPostUpdate }) => {
-
+const MoreOptionsModal = React.memo(({ isOpen, onClose,postId,description, postOwner,onPostUpdate,setProfileActive }) => {
 
 const [isFollowing, setIsFollowing] = useState(false);
 
@@ -162,6 +163,10 @@ useEffect(() => {
     onClose();
   
   };
+  
+  const handleUserProfile=()=>{
+    setProfileActive(postOwner._id);
+  }
 
   const modalStyle = {
     display: isOpen ? 'block' : 'none',
@@ -286,13 +291,17 @@ useEffect(() => {
                    </div>
                  </div>
                   ) : null}
-          <button
-              style={buttonStyle}
-              onMouseEnter={(e) => (e.currentTarget.style.color = hoverColor)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
-            >
-              About this account
-            </button>
+        
+              <button
+                onClick={()=>handleUserProfile()}
+                style={buttonStyle}
+                onMouseEnter={(e) => (e.currentTarget.style.color = hoverColor)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+              >
+                About this account
+              </button>
+
+             
             <hr style={{ border: '1px solid #155e75', margin: '8px 0', width: '100%', }} /> 
          
               <button style={buttonStyle} onClick={handleToggleFollow}>

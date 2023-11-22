@@ -20,7 +20,7 @@ import { motion, AnimatePresence,useAnimation } from "framer-motion";
 import VideoPlayer from "./VideoPlayer";
 import MoreOptionsModal from "./MoreOptionModal";
 
-function PostComponent() {
+function PostComponent({setProfileActive,currentUserProfile }) {
 
   const controls = useAnimation();
 
@@ -187,7 +187,21 @@ function PostComponent() {
       console.error("Error unliking post:", error);
     }
   };
+  const handleUserProfileClick = (clickedId) => {
+    // Check if the clicked user is the current user
+    if (clickedId === userId) {
+      handleCurrentUserProfile();
+    } else {
+      handleUserProfile(clickedId);
+    }
+  };
+  const handleUserProfile=(userId)=>{
+    setProfileActive(userId);
+  }
 
+  const handleCurrentUserProfile=()=>{
+    currentUserProfile()
+  }
   return (
 
 
@@ -234,10 +248,20 @@ function PostComponent() {
                       src={
                         usersData[post.userId]?.dp || "/assets/man-avatar.webp"
                       }
+                      style={{ cursor: "pointer" }}
                       alt={usersData[post.userId]?.username}
+                      onClick={() => handleUserProfileClick(post.userId)}
                     />
                   }
-                  title={usersData[post.userId]?.username}
+
+                  title={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleUserProfileClick(post.userId)}
+                    >
+                      {usersData[post.userId]?.username}
+                    </span>
+                  }
                   subheader={
                     <span style={{ color: "white" }}>
                       {getRelativeTime(post.createdAt)}
@@ -262,6 +286,7 @@ function PostComponent() {
                         description={post.description}
                         postOwner={usersData[post.userId]}
                         onPostUpdate={handleMoremodal}
+                        setProfileActive={setProfileActive}
                       />
                     </>
                   }
@@ -349,10 +374,15 @@ function PostComponent() {
                       paddingTop: "10px",
                     }}
                   >
-                    <div>
-                      <strong>{usersData[post.userId]?.username}</strong>{" "}
-                      {post.description}
-                    </div>
+                   <div>
+                  <strong
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleUserProfileClick(post.userId)}
+                  >
+                    {usersData[post.userId]?.username}
+                  </strong>{" "}
+                  {post.description}
+                </div>
                   </div>
 
                   {post.comments.length > 0 && (

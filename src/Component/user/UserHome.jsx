@@ -3,7 +3,7 @@ import { Grid, Paper } from "@mui/material";
 import PostComponent from "./PostComponent";
 import Suggestwidget from "./Suggestwidget";
 
-function UserHome() {
+function UserHome({ setProfileActive,currentUserProfile }) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,9 @@ function UserHome() {
               elevation={3}
               style={{ padding: 16, backgroundColor: "#111827", width: "100%" }}
             >
-              <PostComponent />
+              <PostComponent
+               setProfileActive={setProfileActive}
+               currentUserProfile={currentUserProfile} />
             </Paper>
           </Grid>
         </>
@@ -66,7 +68,9 @@ function UserHome() {
               elevation={3}
               style={{ padding: 16, backgroundColor: "#111827", width: "100%" }}
             >
-              <PostComponent />
+              <PostComponent 
+              setProfileActive={setProfileActive}
+              currentUserProfile={currentUserProfile}/>
             </Paper>
           </Grid>
           <Grid
