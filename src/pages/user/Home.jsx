@@ -19,9 +19,8 @@ function Home() {
     setActivePage('profile');
   }
   const setProfileActive = (userId) => {
-    console.log(userId,"profileeeeeeeeeeeeeeeeeesetttttttttttttttt");
     setActivePage('userprofile');
-    setPostOwnerId(userId); // Set the post owner's ID to the state
+    setPostOwnerId(userId); 
   };
   return (
     <div className="h-screen bg-gray-900">

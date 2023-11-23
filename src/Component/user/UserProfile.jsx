@@ -2,11 +2,20 @@ import React, { useState, useEffect } from 'react';
 import axios from "../../Axios/axios";
 import ReactPlayer from 'react-player';
 import {useSelector } from 'react-redux';
+import FollowListModal from './FollowListModal';
+
+
+
+
+
+
 function UserProfile({userId}) {
 
   const [isFollowing, setIsFollowing] = useState(false);
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
 
   const currentUserId = useSelector((store) => store.user?.userData?.payload?.userId);
   useEffect(() => {
@@ -67,6 +76,22 @@ function UserProfile({userId}) {
     }
   };
 
+  const openFollowersModal = () => {
+    setShowFollowersModal(true);
+  };
+
+  const openFollowingModal = () => {
+    setShowFollowingModal(true);
+  };
+
+  const closeFollowersModal = () => {
+    setShowFollowersModal(false);
+  };
+
+  const closeFollowingModal = () => {
+    setShowFollowingModal(false);
+  };
+
 
 
   return (
@@ -84,8 +109,9 @@ function UserProfile({userId}) {
             <div className="text-center text-white" style={{ position: 'relative', top: '-50px' }}>
               <h1 className="text-lg font-bold">{user?.username}</h1>
               <p className="text-sm">{user?.bio}</p>
-              <div className="text-center mt-4" style={{ position: 'relative', top: '-20px' }}>
-              <button className="text-white border mt-2 border-gray-900 rounded-lg text-sm hover:text-blue-500" onClick={handleToggleFollow}>
+              <div className="text-center mt-4" style={{ position: 'relative', top: '-10px' }}>
+              <button class="text-white hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+               onClick={handleToggleFollow}>
                 {isFollowing ? 'Unfollow' : 'Follow'}
                 </button>
               </div>
@@ -96,14 +122,19 @@ function UserProfile({userId}) {
                 <span>Post</span>
                 <span className="block">{posts?.length}</span>
               </div>
-              <div className="text-white text-md mx-10">
-                <span>Followers</span>
-                <span className="block">{user?.followers?.length}</span>
-              </div>
-              <div className="text-white text-md">
-                <span>Following</span>
-                <span className="block">{user?.following?.length}</span>
-              </div>
+              <div
+  onClick={openFollowersModal}
+  className="text-white text-md mx-10 cursor-pointer">
+  <span>Followers</span>
+  <span className="block">{user?.followers?.length}</span>
+</div>
+<div
+  onClick={openFollowingModal}
+  className="text-white text-md cursor-pointer">
+  <span>Following</span>
+  <span className="block">{user?.following?.length}</span>
+</div>
+
             </div>
           </div>
         </div>
@@ -155,9 +186,30 @@ function UserProfile({userId}) {
                 ))}
               </div>
             )}
+
+
           </div>
         </div>
       </div>
+      {showFollowersModal && (
+          <div className="modal-overlay">
+            <FollowListModal
+              title="Followers"
+              users={user?.followers || []}
+              onClose={closeFollowersModal}
+            />
+          </div>
+        )}
+
+        {showFollowingModal && (
+          <div className="modal-overlay">
+            <FollowListModal
+              title="Following"
+              users={user?.following || []}
+              onClose={closeFollowingModal}
+            />
+          </div>
+        )}
     </div>
   );
 }
