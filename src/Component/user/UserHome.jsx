@@ -35,7 +35,7 @@ function UserHome({ setProfileActive,currentUserProfile }) {
             md={12}
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <Suggestwidget />
+            <Suggestwidget setProfileActive={setProfileActive} />
           </Grid>
           <Grid
             item
@@ -86,7 +86,7 @@ function UserHome({ setProfileActive,currentUserProfile }) {
               justifyContent: "center",
             }}
           >
-            <Suggestwidget />
+            <Suggestwidget setProfileActive={setProfileActive}/>
           </Grid>
         </>
       )}

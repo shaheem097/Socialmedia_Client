@@ -9,8 +9,8 @@ import FollowListModal from './FollowListModal';
 
 
 
-function UserProfile({userId}) {
-
+function UserProfile({userId,setProfileActive }) {
+    
   const [isFollowing, setIsFollowing] = useState(false);
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
@@ -21,7 +21,7 @@ function UserProfile({userId}) {
   useEffect(() => {
     fetchUser();
     getUserPosts();
-  }, []);
+  }, [userId]);
 
   const fetchUser = async () => {
     try {
@@ -77,11 +77,15 @@ function UserProfile({userId}) {
   };
 
   const openFollowersModal = () => {
-    setShowFollowersModal(true);
+    if (user?.followers.length > 0) {
+        setShowFollowersModal(true);
+      }
   };
 
   const openFollowingModal = () => {
-    setShowFollowingModal(true);
+    if (user?.following.length > 0) {
+        setShowFollowingModal(true);
+      }
   };
 
   const closeFollowersModal = () => {
@@ -197,6 +201,7 @@ function UserProfile({userId}) {
               title="Followers"
               users={user?.followers || []}
               onClose={closeFollowersModal}
+              setProfileActive={setProfileActive}
             />
           </div>
         )}
@@ -207,6 +212,7 @@ function UserProfile({userId}) {
               title="Following"
               users={user?.following || []}
               onClose={closeFollowingModal}
+              setProfileActive={setProfileActive}
             />
           </div>
         )}

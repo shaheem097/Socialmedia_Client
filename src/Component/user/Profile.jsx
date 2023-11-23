@@ -6,7 +6,7 @@ import axios from "../../Axios/axios";
 import ReactPlayer from 'react-player';
 import FollowListModal from './FollowListModal';
 
-function Profile() {
+function Profile({setProfileActive}) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -32,7 +32,6 @@ function Profile() {
 const fetchUser=async()=>{
  
   await axios.get(`/${userId}/user`).then((response)=>{
-    console.log(response.data,"response in profileeeeee");
     setUser(response.data)
   })
 }
@@ -54,11 +53,15 @@ const fetchUser=async()=>{
   };
 
   const openFollowersModal = () => {
-    setShowFollowersModal(true);
+    if (user?.followers.length > 0) {
+        setShowFollowersModal(true);
+      }
   };
 
   const openFollowingModal = () => {
-    setShowFollowingModal(true);
+    if (user?.following.length > 0) {
+        setShowFollowingModal(true);
+      }
   };
 
   const closeFollowersModal = () => {
@@ -184,6 +187,7 @@ const fetchUser=async()=>{
               title="Followers"
               users={user?.followers || []}
               onClose={closeFollowersModal}
+              setProfileActive={setProfileActive}
             />
           </div>
         )}
@@ -194,6 +198,7 @@ const fetchUser=async()=>{
               title="Following"
               users={user?.following || []}
               onClose={closeFollowingModal}
+              setProfileActive={setProfileActive}
             />
           </div>
         )}

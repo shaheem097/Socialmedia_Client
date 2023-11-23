@@ -1,13 +1,14 @@
 import axios from "../../Axios/axios";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { motion } from 'framer-motion';
-import { setUserDetails } from "../../Redux/Reducers/singleReducer";
 
-function Suggestwidget() {
+function Suggestwidget({setProfileActive}) {
+
+
   const [suggestions, setSuggestions] = useState([]);
   const userId = useSelector((store) => store.user?.userData?.payload?.userId);
-  const dispatch = useDispatch();
+
   const getSuggestions = async () => {
     const { data } = await axios.get(`/find-suggest/${userId}`);
     if (data) {
@@ -84,6 +85,10 @@ function Suggestwidget() {
     return null; // This will hide the component
   }
 
+  const handleUserProfile=(userId)=>{
+    setProfileActive(userId);
+  }
+
   return (
     <div
       className="suggestion-card bg-[#030712] border border-white rounded p-4 max-h-[320px] relative overflow-hidden"
@@ -112,15 +117,19 @@ function Suggestwidget() {
                /* Add your onHoverEnd logic here if needed */
              }}
            >
-            <li  className="user-card flex items-center py-3">
+            <li  className="user-card flex items-center py-3 cursor-pointer">
               <img
                 className="user-profile-image w-18 h-18 rounded-full mr-5"
                 src={user.dp || "/assets/man-avatar.webp"}
                 alt={`${user.username}'s profile`}
                 style={{ width: "50px", height: "50px" }}
+                onClick={() => handleUserProfile(user._id)}
               />
               <div className="user-info flex flex-row items-center justify-between">
-                <div className="w-16">
+                <div 
+                className="w-16"
+                onClick={() => handleUserProfile(user._id)}
+                >
                   <p className="username text-md font-semibold text-white">
                     {user.username}
                   </p>

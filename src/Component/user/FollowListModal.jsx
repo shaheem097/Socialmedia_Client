@@ -7,8 +7,7 @@ import { useSelector } from 'react-redux';
 
 
 
-const FollowListModal = ({ title, users, onClose }) => {
-    
+const FollowListModal = ({ title, users, onClose,setProfileActive }) => {
     
     const [usersWithDetails, setUsersWithDetails] = useState([]);
     
@@ -39,6 +38,8 @@ const FollowListModal = ({ title, users, onClose }) => {
         fetchUserDetails();
       }, [users,currentUserId]);
 
+    
+
       const handleToggleFollow = async (friendId, isFollowing, index) => {
         try {
           if (isFollowing) {
@@ -60,6 +61,11 @@ const FollowListModal = ({ title, users, onClose }) => {
         }
       };
 
+      const handleUserProfile=(userId)=>{
+        console.log("setProfileActive called with userId:", userId);
+        onClose();
+        setProfileActive(userId);
+      }
 
   return (
     <div className="follow-list-modal">
@@ -85,15 +91,21 @@ const FollowListModal = ({ title, users, onClose }) => {
               onHoverStart={(e) => {}}
               onHoverEnd={(e) => {}}
             >
-              <li className="user-card flex items-center py-3">
+              <li className="user-card flex items-center py-3 cursor-pointer">
                 <img
                   className="user-profile-image w-18 h-18 rounded-full mr-5"
                   src={user.dp || "/assets/man-avatar.webp"}
                   alt={`${user.username}'s profile`}
                   style={{ width: "50px", height: "50px" }}
+                  onClick={() => handleUserProfile(user._id)}
                 />
-                <div className="user-info flex flex-row items-center justify-between">
-                  <div className="w-16">
+                <div 
+                className="user-info flex flex-row items-center justify-between"
+                
+                >
+                  <div 
+                  onClick={() => handleUserProfile(user._id)}
+                  className="w-16">
                     <p className="username text-md font-semibold text-white">
                       {user.username}
                     </p>

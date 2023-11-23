@@ -19,9 +19,11 @@ function Home() {
     setActivePage('profile');
   }
   const setProfileActive = (userId) => {
+ 
     setActivePage('userprofile');
     setPostOwnerId(userId); 
   };
+  console.log("Rendering Home component with activePage:", activePage);
   return (
     <div className="h-screen bg-gray-900">
     <div className="h-2"></div>
@@ -39,8 +41,8 @@ function Home() {
         />}
         {activePage === 'create' && <Create  setHomeActive={setHomeActive} />}
         {activePage === 'message' && <Message />}
-        {activePage === 'profile' && <Profile />}
-        {activePage === 'userprofile' && postOwnerId && <UserProfile userId={postOwnerId} />}
+        {activePage === 'profile' && <Profile setProfileActive={setProfileActive}/>}
+        {activePage === 'userprofile' && postOwnerId && <UserProfile userId={postOwnerId}  setProfileActive={setProfileActive} />}
       </div>
     </div>
   </div>
