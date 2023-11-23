@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import axios from "../../Axios/axios";
 import ReactPlayer from 'react-player';
+import FollowListModal from './FollowListModal';
 
 function Profile() {
 
@@ -13,7 +14,9 @@ function Profile() {
   const profilePicture = useSelector((store) => store.update?.image);
   const data = useSelector((store) => store.user?.userData?.payload);
   const updatedData = useSelector((store) => store.update?.user);
-  
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+
   const userId=data.userId
 
 
@@ -50,11 +53,26 @@ const fetchUser=async()=>{
     setIsModalOpen(false);
   };
 
- 
+  const openFollowersModal = () => {
+    setShowFollowersModal(true);
+  };
+
+  const openFollowingModal = () => {
+    setShowFollowingModal(true);
+  };
+
+  const closeFollowersModal = () => {
+    setShowFollowersModal(false);
+  };
+
+  const closeFollowingModal = () => {
+    setShowFollowingModal(false);
+  };
   
   return (
 
     <div>
+
     {isModalOpen ? (
       <EditProfile onClose={closeModal} />
     ) : (
@@ -75,20 +93,25 @@ const fetchUser=async()=>{
     </div>
 
    
-    <div className="text-center  justify-center flex flex-wrap"  style={{ position: 'relative', top: '-40px' }}>
-      <div className="text-white text-md">
-        <span>Post</span>
-        <span className="block">{posts.length}</span>
-      </div>
-      <div className="text-white text-md mx-10">
-        <span>Followers</span>
-        <span className="block">{user?.followers.length}</span>
-      </div>
-      <div className="text-white text-md">
-        <span>Following</span>
-        <span className="block">{user?.following.length}</span>
-      </div>
-    </div>
+    <div className="text-center  justify-center flex flex-wrap" style={{ position: 'relative', top: '-40px' }}>
+              <div className="text-white text-md">
+                <span>Post</span>
+                <span className="block">{posts?.length}</span>
+              </div>
+              <div
+  onClick={openFollowersModal}
+  className="text-white text-md mx-10 cursor-pointer">
+  <span>Followers</span>
+  <span className="block">{user?.followers?.length}</span>
+</div>
+<div
+  onClick={openFollowingModal}
+  className="text-white text-md cursor-pointer">
+  <span>Following</span>
+  <span className="block">{user?.following?.length}</span>
+</div>
+
+            </div>
   </div>
 </div>
 
@@ -151,8 +174,33 @@ const fetchUser=async()=>{
       </div>
     </div>
   </div>
+  
+  
   )}
+  <div>
+  {showFollowersModal && (
+          <div className="modal-overlay">
+            <FollowListModal
+              title="Followers"
+              users={user?.followers || []}
+              onClose={closeFollowersModal}
+            />
+          </div>
+        )}
+
+        {showFollowingModal && (
+          <div className="modal-overlay">
+            <FollowListModal
+              title="Following"
+              users={user?.following || []}
+              onClose={closeFollowingModal}
+            />
+          </div>
+        )}
   </div>
+  </div>
+
+
   );
 }
 
