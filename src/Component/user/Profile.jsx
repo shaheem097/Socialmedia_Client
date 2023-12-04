@@ -5,6 +5,10 @@ import { useEffect } from 'react';
 import axios from "../../Axios/axios";
 import ReactPlayer from 'react-player';
 import FollowListModal from './FollowListModal';
+import { motion } from 'framer-motion';
+import PostPreview from './PostPreview';
+
+
 
 function Profile({setProfileActive}) {
 
@@ -16,7 +20,8 @@ function Profile({setProfileActive}) {
   const updatedData = useSelector((store) => store.update?.user);
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
-
+  const [selectedPost, setSelectedPost] = useState(null);
+  
   const userId=data.userId
 
 
@@ -72,6 +77,8 @@ const fetchUser=async()=>{
     setShowFollowingModal(false);
   };
   
+
+  console.log(selectedPost,"selectedposttttttt");
   return (
 
     <div>
@@ -129,6 +136,16 @@ const fetchUser=async()=>{
               ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {posts.map((post, index) => (
+                    <motion.div
+                    key={post.id}
+                    whileHover={{ scale: 1.01, zIndex: 1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    onClick={() => setSelectedPost(post)}
+                    style={{
+                      position: "relative",
+                      // or 'block'
+                    }}
+                  >
                     <div key={index} className="relative rounded-lg overflow-hidden">
                       <div className='bg-gray-900'
                         style={{
@@ -166,11 +183,12 @@ const fetchUser=async()=>{
                             src={post.post[0]} // Use the first image in the post array or a default image
                             alt={`Post ${index}`}
                             className="rounded-lg object-cover"
-                            style={{ width: '100%', height: '100%' }}
+                            style={{ width: '100%', height: '100%',cursor: "pointer" }}
                           />
                         )}
                       </div>
                     </div>
+                    </motion.div>
                   ))}
                 </div>
                 )}
@@ -203,6 +221,9 @@ const fetchUser=async()=>{
           </div>
         )}
   </div>
+  {selectedPost && (
+        <PostPreview post={selectedPost} onClose={() => setSelectedPost(null)} />
+      )}
   </div>
 
 

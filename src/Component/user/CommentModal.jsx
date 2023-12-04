@@ -6,6 +6,7 @@ import { setUpdatedPost } from '../../Redux/Reducers/postReducer';
 
 
 function CommentModal({ isOpen, onClose, postId,comments ,postOwner }) {
+  console.log("modaaaaalllll");
   const [commentText, setCommentText] = useState("");
   const [visibleComments, setVisibleComments] = useState([]);
  

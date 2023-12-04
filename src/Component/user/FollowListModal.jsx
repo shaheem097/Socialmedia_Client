@@ -5,8 +5,6 @@ import axios from "../../Axios/axios";
 import { useSelector } from 'react-redux';
 
 
-
-
 const FollowListModal = ({ title, users, onClose,setProfileActive }) => {
     
     const [usersWithDetails, setUsersWithDetails] = useState([]);

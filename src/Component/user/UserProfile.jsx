@@ -84,8 +84,8 @@ function UserProfile({userId,setProfileActive }) {
 
   const openFollowingModal = () => {
     if (user?.following.length > 0) {
-        setShowFollowingModal(true);
-      }
+      setShowFollowingModal(true);
+    }
   };
 
   const closeFollowersModal = () => {
